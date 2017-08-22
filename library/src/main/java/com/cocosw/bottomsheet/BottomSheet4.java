@@ -12,6 +12,7 @@ import android.support.annotation.*;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.media.RatingCompat;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
@@ -28,7 +29,7 @@ import java.util.ArrayList;
  */
 public class BottomSheet4 extends BottomSheetDialogFragment implements DialogInterface {
 
-    private Builder mBuilder;
+    private static Builder mBuilder;
     protected void add(Builder bilder){
         mBuilder = bilder;
     }
@@ -310,27 +311,37 @@ public class BottomSheet4 extends BottomSheetDialogFragment implements DialogInt
         private int limit = -1;
         private MenuItem.OnMenuItemClickListener menulistener;
 
-        private int theme = 0;
-
         private FragmentManager mFragmentManager;
-
+        private BottomSheet4 dialog;
 
         public Builder(@NonNull Context context, FragmentManager fragmentManager){
-
+            dialog = new BottomSheet4();
             this.mFragmentManager = fragmentManager;
             this.context = context;
             this.menu = new ActionMenu(context);
         }
 
-//        /**
-//         * Show BottomSheet in dark color theme looking
-//         *
-//         * @return This Builder object to allow for chaining of calls to set methods
-//         */
-//        public Builder darkTheme() {
-//            theme = R.style.BottomSheet_Dialog_Dark;
-//            return this;
-//        }
+        public Builder(@NonNull Context context, FragmentManager fragmentManager, @RatingCompat.Style int theme){
+            dialog = new BottomSheet4();
+            dialog.setStyle(DialogFragment.STYLE_NO_TITLE, theme);
+            this.mFragmentManager = fragmentManager;
+            this.context = context;
+            this.menu = new ActionMenu(context);
+        }
+
+        public ActionMenu getMenu(){
+            return this.menu;
+        }
+
+        /**
+         * Show BottomSheet in dark color theme looking
+         *
+         * @return This Builder object to allow for chaining of calls to set methods
+         */
+        public Builder darkTheme() {
+            dialog.setStyle(DialogFragment.STYLE_NO_TITLE, R.style.BottomSheet_Dialog_Dark);
+            return this;
+        }
 
         /**
          * Set menu resources as list item to display in BottomSheet
@@ -342,7 +353,6 @@ public class BottomSheet4 extends BottomSheetDialogFragment implements DialogInt
             new MenuInflater(context).inflate(xmlRes, menu);
             return this;
         }
-
 
         /**
          * Add one item into BottomSheet
@@ -465,18 +475,6 @@ public class BottomSheet4 extends BottomSheetDialogFragment implements DialogInt
             return this;
         }
 
-
-        /**
-         * Show BottomSheet
-         *
-         * @return Instance of bottomsheet
-         */
-        public BottomSheet4 show() {
-            dialog = build();
-            dialog.show(mFragmentManager, null);
-            return dialog;
-        }
-
         /**
          * Show items in grid instead of list
          *
@@ -500,7 +498,7 @@ public class BottomSheet4 extends BottomSheetDialogFragment implements DialogInt
         }
 
 
-        private BottomSheet4 dialog;
+        //private BottomSheet4 dialog;
 
         /**
          * Create a BottomSheet but not show it
@@ -509,8 +507,18 @@ public class BottomSheet4 extends BottomSheetDialogFragment implements DialogInt
          */
         @SuppressLint("Override")
         public BottomSheet4 build() {
-            BottomSheet4 dialog = new BottomSheet4();
             dialog.add(this);
+            return dialog;
+        }
+
+        /**
+         * Show BottomSheet
+         *
+         * @return Instance of bottomsheet
+         */
+        public BottomSheet4 show() {
+            dialog = build();
+            dialog.show(mFragmentManager, null);
             return dialog;
         }
 

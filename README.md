@@ -13,7 +13,7 @@ https://www.google.com/design/spec/components/bottom-sheets.html
 ![Sample](https://github.com/soarcn/BottomSheet/blob/master/art/image3.png?raw=true)
 ![Sample](https://github.com/soarcn/BottomSheet/blob/master/art/image4.png?raw=true)
 ![Sample](https://github.com/soarcn/BottomSheet/blob/master/art/image5.png?raw=true)
--->
+
 How to use this library
 =======
 
@@ -115,7 +115,7 @@ About me
 
 I'm Kai, an 32 years old android developer based in Sydney.
 
-
+-->
 License
 =======
 

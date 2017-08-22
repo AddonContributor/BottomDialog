@@ -25,31 +25,13 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.IntegerRes;
-import android.support.annotation.MenuRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.support.annotation.StyleRes;
+import android.support.annotation.*;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.util.SparseIntArray;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.view.*;
+import android.widget.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -68,7 +50,6 @@ public class BottomSheet extends Dialog implements DialogInterface {
 
     private final SparseIntArray hidden = new SparseIntArray();
 
-    private TranslucentHelper helper;
     private String moreText;
     private Drawable close;
     private Drawable more;
@@ -77,7 +58,7 @@ public class BottomSheet extends Dialog implements DialogInterface {
     private int mGridItemLayoutId;
 
     private boolean collapseListIcons;
-    private GridView list;
+    private PinnedSectionGridView list;
     private SimpleSectionedGridAdapter adapter;
     private Builder builder;
     private ImageView icon;
@@ -100,22 +81,17 @@ public class BottomSheet extends Dialog implements DialogInterface {
         super(context, theme);
 
         TypedArray a = getContext()
-                .obtainStyledAttributes(null, R.styleable.BottomSheet, R.attr.bs_bottomSheetStyle, 0);
+                .obtainStyledAttributes(null, R.styleable.BottomSheet, R.attr.bottomDialogStyle, 0);
         try {
-            more = a.getDrawable(R.styleable.BottomSheet_bs_moreDrawable);
-            close = a.getDrawable(R.styleable.BottomSheet_bs_closeDrawable);
-            moreText = a.getString(R.styleable.BottomSheet_bs_moreText);
-            collapseListIcons = a.getBoolean(R.styleable.BottomSheet_bs_collapseListIcons, true);
-            mHeaderLayoutId = a.getResourceId(R.styleable.BottomSheet_bs_headerLayout, R.layout.bs_header);
-            mListItemLayoutId = a.getResourceId(R.styleable.BottomSheet_bs_listItemLayout, R.layout.bs_list_entry);
-            mGridItemLayoutId = a.getResourceId(R.styleable.BottomSheet_bs_gridItemLayout, R.layout.bs_grid_entry);
+            more = a.getDrawable(R.styleable.BottomSheet_bd_MoreDrawable);
+            close = a.getDrawable(R.styleable.BottomSheet_bd_CloseDrawable);
+            moreText = a.getString(R.styleable.BottomSheet_bd_MoreText);
+            collapseListIcons = a.getBoolean(R.styleable.BottomSheet_bd_CollapseListIcons, true);
+            mHeaderLayoutId = a.getResourceId(R.styleable.BottomSheet_bd_HeaderLayout, R.layout.bs_header);
+            mListItemLayoutId = a.getResourceId(R.styleable.BottomSheet_bd_ListItemLayout, R.layout.bs_list_entry);
+            mGridItemLayoutId = a.getResourceId(R.styleable.BottomSheet_bd_GridItemLayout, R.layout.bs_grid_entry);
         } finally {
             a.recycle();
-        }
-
-        // https://github.com/jgilfelt/SystemBarTint/blob/master/library/src/com/readystatesoftware/systembartint/SystemBarTintManager.java
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            helper = new TranslucentHelper(this, context);
         }
     }
 
@@ -190,11 +166,6 @@ public class BottomSheet extends Dialog implements DialogInterface {
         int[] location = new int[2];
         mDialogView.getLocationOnScreen(location);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            mDialogView.setPadding(0, location[0] == 0 ? helper.mStatusBarHeight : 0, 0, 0);
-            mDialogView.getChildAt(0).setPadding(0, 0, 0, helper.mNavBarAvailable ? helper.getNavigationBarHeight(getContext()) + mDialogView.getPaddingBottom() : 0);
-        }
-
         final TextView title = (TextView) mDialogView.findViewById(R.id.bottom_sheet_title);
         if (builder.title != null) {
             title.setVisibility(View.VISIBLE);
@@ -202,7 +173,7 @@ public class BottomSheet extends Dialog implements DialogInterface {
         }
 
         icon = (ImageView) mDialogView.findViewById(R.id.bottom_sheet_title_image);
-        list = (GridView) mDialogView.findViewById(R.id.bottom_sheet_gridview);
+        list = (PinnedSectionGridView) mDialogView.findViewById(R.id.bottom_sheet_gridview);
         mDialogView.mTarget = list;
         if (!builder.grid) {
             list.setNumColumns(1);
@@ -235,85 +206,9 @@ public class BottomSheet extends Dialog implements DialogInterface {
             mDialogView.setCollapsible(true);
         }
 
-        BaseAdapter baseAdapter = new BaseAdapter() {
-
-            @Override
-            public int getCount() {
-                return actions.size() - hidden.size();
-            }
-
-            @Override
-            public MenuItem getItem(int position) {
-                return actions.getItem(position);
-            }
-
-            @Override
-            public long getItemId(int position) {
-                return position;
-            }
-
-            @Override
-            public int getViewTypeCount() {
-                return 1;
-            }
-
-            @Override
-            public boolean isEnabled(int position) {
-                return getItem(position).isEnabled();
-            }
-
-            @Override
-            public boolean areAllItemsEnabled() {
-                return false;
-            }
-
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    LayoutInflater inflater = (LayoutInflater) getContext()
-                            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    if (builder.grid)
-                        convertView = inflater.inflate(mGridItemLayoutId, parent, false);
-                    else
-                        convertView = inflater.inflate(mListItemLayoutId, parent, false);
-                    holder = new ViewHolder();
-                    holder.title = (TextView) convertView.findViewById(R.id.bs_list_title);
-                    holder.image = (ImageView) convertView.findViewById(R.id.bs_list_image);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder) convertView.getTag();
-                }
-
-                for (int i = 0; i < hidden.size(); i++) {
-                    if (hidden.valueAt(i) <= position)
-                        position++;
-                }
-
-                MenuItem item = getItem(position);
-
-                holder.title.setText(item.getTitle());
-                if (item.getIcon() == null)
-                    holder.image.setVisibility(collapseListIcons ? View.GONE : View.INVISIBLE);
-                else {
-                    holder.image.setVisibility(View.VISIBLE);
-                    holder.image.setImageDrawable(item.getIcon());
-                }
-
-                holder.image.setEnabled(item.isEnabled());
-                holder.title.setEnabled(item.isEnabled());
-
-                return convertView;
-            }
-
-            class ViewHolder {
-                private TextView title;
-                private ImageView image;
-            }
-        };
-
+        int layoutId = builder.grid ? mGridItemLayoutId : mListItemLayoutId;
+        final ActionsAdapter baseAdapter = new ActionsAdapter(context, actions, layoutId, collapseListIcons);
         adapter = new SimpleSectionedGridAdapter(context, baseAdapter, R.layout.bs_list_divider, R.id.headerlayout, R.id.header);
-        list.setAdapter(adapter);
         adapter.setGridView(list);
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -501,7 +396,7 @@ public class BottomSheet extends Dialog implements DialogInterface {
          */
         public Builder(@NonNull Activity context) {
             this(context, R.style.BottomSheet_Dialog);
-            TypedArray ta = context.getTheme().obtainStyledAttributes(new int[]{R.attr.bs_bottomSheetStyle});
+            TypedArray ta = context.getTheme().obtainStyledAttributes(new int[]{R.attr.bottomDialogStyle});
             try {
                 theme = ta.getResourceId(0, R.style.BottomSheet_Dialog);
             } finally {

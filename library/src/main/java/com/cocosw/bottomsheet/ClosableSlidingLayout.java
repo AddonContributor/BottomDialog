@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
  * Project: gradle
  * Created by LiaoKai(soarcn) on 2014/11/25.
  */
+@Deprecated
 class ClosableSlidingLayout extends FrameLayout {
 
     private static final int INVALID_POINTER = -1;

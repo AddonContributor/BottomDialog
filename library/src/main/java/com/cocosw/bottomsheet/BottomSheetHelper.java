@@ -8,6 +8,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 
 import java.util.List;
 
@@ -33,8 +34,8 @@ public class BottomSheetHelper {
      * @param intent   shareIntent
      * @return BottomSheet builder
      */
-    public static BottomSheet.Builder shareAction(@NonNull final Activity activity, @NonNull final Intent intent) {
-        BottomSheet.Builder builder = new BottomSheet.Builder(activity).grid();
+    public static BottomSheet4.Builder shareAction(@NonNull final Activity activity, FragmentManager fm, @NonNull final Intent intent) {
+        BottomSheet4.Builder builder = new BottomSheet4.Builder(activity, fm).grid();
         PackageManager pm = activity.getPackageManager();
 
         final List<ResolveInfo> list = pm.queryIntentActivities(intent, 0);

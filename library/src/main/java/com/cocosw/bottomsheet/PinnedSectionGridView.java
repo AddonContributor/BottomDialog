@@ -33,7 +33,7 @@ class PinnedSectionGridView extends GridView {
     private int mNumColumns;
     private int mHorizontalSpacing;
     private int mColumnWidth;
-    private int mAvailableWidth;
+
 
     public PinnedSectionGridView(Context context) {
         super(context);
@@ -78,28 +78,6 @@ class PinnedSectionGridView extends GridView {
     }
 
     public int getAvailableWidth() {
-        return mAvailableWidth != 0 ? mAvailableWidth : getWidth();
+        return getWidth();
     }
-
-//    @Override
-//    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//        if (mNumColumns == GridView.AUTO_FIT) {
-//            mAvailableWidth = MeasureSpec.getSize(widthMeasureSpec);
-//            if (mColumnWidth > 0) {
-//                int availableSpace = MeasureSpec.getSize(widthMeasureSpec) - getPaddingLeft() - getPaddingRight();
-//                // Client told us to pick the number of columns
-//                mNumColumns = (availableSpace + mHorizontalSpacing) /
-//                        (mColumnWidth + mHorizontalSpacing);
-//            } else {
-//                // Just make up a number if we don't have enough info
-//                mNumColumns = 2;
-//            }
-//            if(null != getAdapter()){
-//                if(getAdapter() instanceof SimpleSectionedGridAdapter){
-//                    ((SimpleSectionedGridAdapter)getAdapter()).setSections();
-//                }
-//            }
-//        }
-//        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-//    }
 }

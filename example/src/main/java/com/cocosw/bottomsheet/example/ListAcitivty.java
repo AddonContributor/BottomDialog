@@ -1,23 +1,19 @@
 package com.cocosw.bottomsheet.example;
 
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-
-import com.cocosw.bottomsheet.BottomSheet;
+import com.cocosw.bottomsheet.BottomSheet4;
 import com.cocosw.bottomsheet.BottomSheetHelper;
 import com.cocosw.query.CocoQuery;
 
@@ -30,7 +26,7 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
     private CocoQuery q;
     private int action;
     private ArrayAdapter<String> adapter;
-    private BottomSheet sheet;
+    private BottomSheet4.Builder sheet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +38,9 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
         action = getIntent().getFlags();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        
+        
+        
         q = new CocoQuery(this);
         setTitle(getIntent().getStringExtra("title"));
         String[] items = new String[]{"Janet Perkins", "Mary Johnson", "Peter Carlsson", "Trevor Hansen", "Aaron Bennett"};
@@ -61,7 +60,7 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
     @SuppressWarnings("deprecation")
     @Override
     public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-        showDialog(position);
+        doDialog(position).show();
     }
 
     private Drawable getRoundedBitmap(int imageId) {
@@ -78,126 +77,127 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
         return roundedBitmapDrawable;
     }
 
-    @SuppressWarnings("deprecation")
-    @Nullable
-    @Override
-    protected Dialog onCreateDialog(final int position, Bundle args) {
-        switch (action) {
-            case 0:
-                sheet = new BottomSheet.Builder(this).icon(getRoundedBitmap(R.drawable.icon)).title("To " + adapter.getItem(position)).sheet(R.menu.list).listener(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ListAcitivty.this.onClick(adapter.getItem(position), which);
-                    }
-                }).build();
-                break;
-            case 1:
-                sheet = new BottomSheet.Builder(this).sheet(R.menu.noicon).listener(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ListAcitivty.this.onClick(adapter.getItem(position), which);
-                    }
-                }).build();
-                break;
+//    @SuppressWarnings("deprecation")
+//    @Nullable
+//    @Override
+//    protected Dialog onCreateDialog(final int position, Bundle args) {
+//        switch (action) {
+//            case 0:
+//
+//                sheet = new BottomSheet4.Builder(this, getSupportFragmentManager()).icon(getRoundedBitmap(R.drawable.icon)).title("To " + adapter.getItem(position)).sheet(R.menu.list).listener(new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        ListAcitivty.this.onClick(adapter.getItem(position), which);
+//                    }
+//                }).build();
+//                break;
+//            case 1:
+//                sheet = new BottomSheet4.Builder(this, getSupportFragmentManager()).sheet(R.menu.noicon).listener(new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        ListAcitivty.this.onClick(adapter.getItem(position), which);
+//                    }
+//                }).build();
+//                break;
+//
+//            case 2:
+////                sheet = new BottomSheet4.Builder(this, getSupportFragmentManager()).darkTheme().title("To " + adapter.getItem(position)).sheet(R.menu.list).listener(new DialogInterface.OnClickListener() {
+////                    @Override
+////                    public void onClick(DialogInterface dialog, int which) {
+////                        ListAcitivty.this.onClick(adapter.getItem(position), which);
+////                    }
+////                }).build();
+//                break;
+//            case 3:
+//                sheet = new BottomSheet4.Builder(this, getSupportFragmentManager()).sheet(R.menu.list).listener(new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        ListAcitivty.this.onClick(adapter.getItem(position), which);
+//                    }
+//                }).grid().build();
+//                break;
+//            case 4:
+////                sheet = new BottomSheet4.Builder(this, R.style.BottomSheet4_StyleDialog).title("To " + adapter.getItem(position)).sheet(R.menu.list).listener(new DialogInterface.OnClickListener() {
+////                    @Override
+////                    public void onClick(DialogInterface dialog, int which) {
+////                        ListAcitivty.this.onClick(adapter.getItem(position), which);
+////                    }
+////                }).build();
+//                break;
+//            case 5:
+//                sheet = new BottomSheet4.Builder(this, getSupportFragmentManager()).title("To " + adapter.getItem(position)).sheet(R.menu.longlist).listener(new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        ListAcitivty.this.onClick(adapter.getItem(position), which);
+//                    }
+//                }).limit(R.integer.bs_initial_list_row).build();
+//                break;
+//            case 6:
+//                sheet = getShareActions("Hello " + adapter.getItem(position)).title("Share To " + adapter.getItem(position)).limit(R.integer.no_limit).build();
+//                break;
+//            case 7:
+//                sheet = getShareActions("Hello " + adapter.getItem(position)).title("Share To " + adapter.getItem(position)).build();
+//                break;
+//            case 8:
+//                sheet = new BottomSheet4.Builder(this, getSupportFragmentManager()).icon(getRoundedBitmap(R.drawable.icon)).title("To " + adapter.getItem(position)).sheet(R.menu.list).listener(new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        ListAcitivty.this.onClick(adapter.getItem(position), which);
+//                    }
+//                }).build();
+//                final Menu menu = sheet.getMenu();
+//                menu.getItem(0).setTitle("MenuClickListener");
+//                menu.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+//                    @Override
+//                    public boolean onMenuItemClick(MenuItem item) {
+//                        q.alert("OnMenuItemClickListener", "You can set OnMenuItemClickListener for each item");
+//                        return true;
+//                    }
+//                });
+//                menu.getItem(1).setVisible(false);
+//                menu.getItem(2).setEnabled(false);
+//                menu.add(Menu.NONE, 23, Menu.NONE, "Fresh meal!");
+//                menu.findItem(23).setIcon(R.drawable.perm_group_user_dictionary);
+//                menu.findItem(23).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+//                    @Override
+//                    public boolean onMenuItemClick(MenuItem item) {
+//                        q.toast("Hello");
+//                        return true;
+//                    }
+//                });
+//                menu.setGroupVisible(android.R.id.empty,false);
+//                break;
+//            case 9:
+////                sheet = new BottomSheet4.Builder(this, R.style.BottomSheet4_CustomizedDialog).grid().title("To " + adapter.getItem(position)).sheet(R.menu.list).listener(new DialogInterface.OnClickListener() {
+////                    @Override
+////                    public void onClick(DialogInterface dialog, int which) {
+////                        ListAcitivty.this.onClick(adapter.getItem(position), which);
+////                    }
+////                }).build();
+////                sheet.setOnShowListener(new DialogInterface.OnShowListener() {
+////                    @Override
+////                    public void onShow(DialogInterface dialog) {
+////                        q.toast("I'm showing");
+////                    }
+////                });
+////                sheet.setOnDismissListener(new DialogInterface.OnDismissListener() {
+////                    @Override
+////                    public void onDismiss(DialogInterface dialog) {
+////                        q.toast("I'm dismissing");
+////                    }
+////                });
+//                break;
+//
+//        }
+//        return sheet.getDialog();
+//    }
 
-            case 2:
-                sheet = new BottomSheet.Builder(this).darkTheme().title("To " + adapter.getItem(position)).sheet(R.menu.list).listener(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ListAcitivty.this.onClick(adapter.getItem(position), which);
-                    }
-                }).build();
-                break;
-            case 3:
-                sheet = new BottomSheet.Builder(this).sheet(R.menu.list).listener(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ListAcitivty.this.onClick(adapter.getItem(position), which);
-                    }
-                }).grid().build();
-                break;
-            case 4:
-                sheet = new BottomSheet.Builder(this, R.style.BottomSheet_StyleDialog).title("To " + adapter.getItem(position)).sheet(R.menu.list).listener(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ListAcitivty.this.onClick(adapter.getItem(position), which);
-                    }
-                }).build();
-                break;
-            case 5:
-                sheet = new BottomSheet.Builder(this).title("To " + adapter.getItem(position)).sheet(R.menu.longlist).listener(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ListAcitivty.this.onClick(adapter.getItem(position), which);
-                    }
-                }).limit(R.integer.bs_initial_list_row).build();
-                break;
-            case 6:
-                sheet = getShareActions("Hello " + adapter.getItem(position)).title("Share To " + adapter.getItem(position)).limit(R.integer.no_limit).build();
-                break;
-            case 7:
-                sheet = getShareActions("Hello " + adapter.getItem(position)).title("Share To " + adapter.getItem(position)).build();
-                break;
-            case 8:
-                sheet = new BottomSheet.Builder(this).icon(getRoundedBitmap(R.drawable.icon)).title("To " + adapter.getItem(position)).sheet(R.menu.list).listener(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ListAcitivty.this.onClick(adapter.getItem(position), which);
-                    }
-                }).build();
-                final Menu menu = sheet.getMenu();
-                menu.getItem(0).setTitle("MenuClickListener");
-                menu.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        q.alert("OnMenuItemClickListener", "You can set OnMenuItemClickListener for each item");
-                        return true;
-                    }
-                });
-                menu.getItem(1).setVisible(false);
-                menu.getItem(2).setEnabled(false);
-                menu.add(Menu.NONE, 23, Menu.NONE, "Fresh meal!");
-                menu.findItem(23).setIcon(R.drawable.perm_group_user_dictionary);
-                menu.findItem(23).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        q.toast("Hello");
-                        return true;
-                    }
-                });
-                menu.setGroupVisible(android.R.id.empty,false);
-                break;
-            case 9:
-                sheet = new BottomSheet.Builder(this, R.style.BottomSheet_CustomizedDialog).grid().title("To " + adapter.getItem(position)).sheet(R.menu.list).listener(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ListAcitivty.this.onClick(adapter.getItem(position), which);
-                    }
-                }).build();
-                sheet.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(DialogInterface dialog) {
-                        q.toast("I'm showing");
-                    }
-                });
-                sheet.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        q.toast("I'm dismissing");
-                    }
-                });
-                break;
-
-        }
-        return sheet;
-    }
-
-    private BottomSheet.Builder getShareActions(String text) {
+    private BottomSheet4.Builder getShareActions(String text) {
         final Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, text);
 
-        return BottomSheetHelper.shareAction(this, shareIntent);
+        return BottomSheetHelper.shareAction(this, getSupportFragmentManager(), shareIntent);
     }
 
 
@@ -216,5 +216,127 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
                 q.toast("Help me!");
                 break;
         }
+    }
+
+
+    private BottomSheet4.Builder doDialog(final int position){
+        switch (action) {
+            case 0:
+                sheet = new BottomSheet4.Builder(this, getSupportFragmentManager()).icon(getRoundedBitmap(R.drawable.icon)).title("To " + adapter.getItem(position)).sheet(R.menu.list).listener(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ListAcitivty.this.onClick(adapter.getItem(position), which);
+                    }
+                });
+
+                sheet.build();
+                break;
+            case 1:
+                sheet = new BottomSheet4.Builder(this, getSupportFragmentManager()).sheet(R.menu.noicon).listener(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ListAcitivty.this.onClick(adapter.getItem(position), which);
+                    }
+                });
+                sheet.build();
+                break;
+
+            case 2:
+//                sheet = new BottomSheet4.Builder(this, getSupportFragmentManager()).darkTheme().title("To " + adapter.getItem(position)).sheet(R.menu.list).listener(new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        ListAcitivty.this.onClick(adapter.getItem(position), which);
+//                    }
+//                });
+//                sheet.build();
+                break;
+            case 3:
+                sheet = new BottomSheet4.Builder(this, getSupportFragmentManager()).sheet(R.menu.list).listener(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ListAcitivty.this.onClick(adapter.getItem(position), which);
+                    }
+                });
+                sheet.grid().build();
+                break;
+            case 4:
+//                sheet = new BottomSheet4.Builder(this, R.style.BottomSheet4_StyleDialog).title("To " + adapter.getItem(position)).sheet(R.menu.list).listener(new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        ListAcitivty.this.onClick(adapter.getItem(position), which);
+//                    }
+//                }).build();
+                break;
+            case 5:
+                sheet = new BottomSheet4.Builder(this, getSupportFragmentManager()).title("To " + adapter.getItem(position)).sheet(R.menu.longlist).listener(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ListAcitivty.this.onClick(adapter.getItem(position), which);
+                    }
+                });
+                sheet.limit(R.integer.bs_initial_list_row).build();
+                break;
+            case 6:
+                sheet = getShareActions("Hello " + adapter.getItem(position));
+                sheet.title("Share To " + adapter.getItem(position)).limit(R.integer.no_limit).build();
+                break;
+            case 7:
+                sheet = getShareActions("Hello " + adapter.getItem(position));
+                sheet.title("Share To " + adapter.getItem(position)).build();
+                break;
+            case 8:
+//                sheet = new BottomSheet4.Builder(this, getSupportFragmentManager());
+//                sheet.icon(getRoundedBitmap(R.drawable.icon)).title("To " + adapter.getItem(position)).sheet(R.menu.list).listener(new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        ListAcitivty.this.onClick(adapter.getItem(position), which);
+//                    }
+//                }).build();
+//                final Menu menu = sheet.getMenu();
+//                menu.getItem(0).setTitle("MenuClickListener");
+//                menu.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+//                    @Override
+//                    public boolean onMenuItemClick(MenuItem item) {
+//                        q.alert("OnMenuItemClickListener", "You can set OnMenuItemClickListener for each item");
+//                        return true;
+//                    }
+//                });
+//                menu.getItem(1).setVisible(false);
+//                menu.getItem(2).setEnabled(false);
+//                menu.add(Menu.NONE, 23, Menu.NONE, "Fresh meal!");
+//                menu.findItem(23).setIcon(R.drawable.perm_group_user_dictionary);
+//                menu.findItem(23).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+//                    @Override
+//                    public boolean onMenuItemClick(MenuItem item) {
+//                        q.toast("Hello");
+//                        return true;
+//                    }
+//                });
+//                menu.setGroupVisible(android.R.id.empty,false);
+                break;
+            case 9:
+//                sheet = new BottomSheet4.Builder(this, R.style.BottomSheet4_CustomizedDialog).grid().title("To " + adapter.getItem(position)).sheet(R.menu.list).listener(new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        ListAcitivty.this.onClick(adapter.getItem(position), which);
+//                    }
+//                }).build();
+//                sheet.setOnShowListener(new DialogInterface.OnShowListener() {
+//                    @Override
+//                    public void onShow(DialogInterface dialog) {
+//                        q.toast("I'm showing");
+//                    }
+//                });
+//                sheet.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//                    @Override
+//                    public void onDismiss(DialogInterface dialog) {
+//                        q.toast("I'm dismissing");
+//                    }
+//                });
+                break;
+
+        }
+
+        return sheet;
     }
 }

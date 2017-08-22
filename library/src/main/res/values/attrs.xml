@@ -2,21 +2,21 @@
 <resources>
 
     <declare-styleable name="BottomSheet">
-        <attr name="bs_bottomSheetStyle" format="reference"/>
-        <attr name="bs_dialogBackground" format="color|reference" />
-        <attr name="bs_listStyle" format="reference"/>
-        <attr name="bs_dividerColor" format="color|reference" />
-        <attr name="bs_numColumns" format="integer"/>
-        <attr name="bs_titleTextAppearance" format="reference" />
-        <attr name="bs_listItemTitleTextAppearance" format="reference" />
-        <attr name="bs_gridItemTitleTextAppearance" format="reference" />
-        <attr name="bs_moreDrawable" format="reference"/>
-        <attr name="bs_moreText" format="string"/>
-        <attr name="bs_closeDrawable" format="reference"/>
-        <attr name="bs_collapseListIcons" format="boolean"/>
-        <attr name="bs_listItemLayout" format="reference" />
-        <attr name="bs_gridItemLayout" format="reference" />
-        <attr name="bs_headerLayout" format="reference" />
+        <attr name="bottomDialogStyle" format="reference"/>
+        <attr name="bd_Background" format="color|reference" />
+        <attr name="bd_ListStyle" format="reference"/>
+        <attr name="bd_DividerColor" format="color|reference" />
+        <attr name="bd_NumColumns" format="integer"/>
+        <attr name="bd_TitleTextAppearance" format="reference" />
+        <attr name="bd_ListItemTitleTextAppearance" format="reference" />
+        <attr name="bd_GridItemTitleTextAppearance" format="reference" />
+        <attr name="bd_MoreDrawable" format="reference"/>
+        <attr name="bd_MoreText" format="string"/>
+        <attr name="bd_CloseDrawable" format="reference"/>
+        <attr name="bd_CollapseListIcons" format="boolean"/>
+        <attr name="bd_ListItemLayout" format="reference" />
+        <attr name="bd_GridItemLayout" format="reference" />
+        <attr name="bd_HeaderLayout" format="reference" />
     </declare-styleable>
 
 </resources>

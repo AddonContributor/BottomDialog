@@ -1,9 +1,7 @@
 package com.cocosw.bottomsheet;
 
 
-import java.util.Arrays;
-import java.util.Comparator;
-
+import android.app.Dialog;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.text.TextUtils;
@@ -13,9 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.Arrays;
+import java.util.Comparator;
 
 class SimpleSectionedGridAdapter extends BaseAdapter{
     protected static final int TYPE_FILLER = 0;
@@ -24,8 +24,8 @@ class SimpleSectionedGridAdapter extends BaseAdapter{
     private boolean mValid = true;
     private int mSectionResourceId;
     private LayoutInflater mLayoutInflater;
-    private ListAdapter mBaseAdapter;
-    SparseArray<Section> mSections = new SparseArray<Section>();
+    private ActionsAdapter mBaseAdapter;
+    SparseArray<Section> mSections = new SparseArray<>();
     private Section[] mInitialSections = new Section[0];
     private Context mContext;
     private View mLastViewSeen;
@@ -37,7 +37,7 @@ class SimpleSectionedGridAdapter extends BaseAdapter{
     private int mStrechMode;
     private int requestedColumnWidth;
     private int requestedHorizontalSpacing;
-    private GridView mGridView;
+    private PinnedSectionGridView mGridView;
     private int mHeaderLayoutResId;
     private int mHeaderTextViewResId;
 
@@ -57,8 +57,32 @@ class SimpleSectionedGridAdapter extends BaseAdapter{
         }
     }
 
-    public SimpleSectionedGridAdapter(Context context, BaseAdapter baseAdapter, int sectionResourceId, int headerLayoutResId,
-                                      int headerTextViewResId) {
+    SimpleSectionedGridAdapter(Dialog dialog, ActionsAdapter baseAdapter, int sectionResourceId, int headerLayoutResId,
+                               int headerTextViewResId) {
+//        mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mLayoutInflater = dialog.getLayoutInflater();
+        mSectionResourceId = sectionResourceId;
+        mHeaderLayoutResId = headerLayoutResId;
+        mHeaderTextViewResId = headerTextViewResId;
+        mBaseAdapter = baseAdapter;
+        mContext = dialog.getContext();
+        mBaseAdapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                mValid = !mBaseAdapter.isEmpty();
+                notifyDataSetChanged();
+            }
+
+            @Override
+            public void onInvalidated() {
+                mValid = false;
+                notifyDataSetInvalidated();
+            }
+        });
+    }
+
+    SimpleSectionedGridAdapter(Context context, ActionsAdapter baseAdapter, int sectionResourceId, int headerLayoutResId,
+                               int headerTextViewResId) {
         mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mSectionResourceId = sectionResourceId;
         mHeaderLayoutResId = headerLayoutResId;
@@ -80,16 +104,13 @@ class SimpleSectionedGridAdapter extends BaseAdapter{
         });
     }
 
-    public void setGridView(GridView gridView){
-        if(!(gridView instanceof PinnedSectionGridView)){
-            throw new IllegalArgumentException("Does your grid view extends PinnedSectionGridView?");
-        }
+    void setGridView(PinnedSectionGridView gridView){
         mGridView = gridView;
         mStrechMode = gridView.getStretchMode();
         mWidth = gridView.getWidth() - (mGridView.getPaddingLeft() + mGridView.getPaddingRight());
-        mNumColumns = ((PinnedSectionGridView)gridView).getNumColumns();
-        requestedColumnWidth = ((PinnedSectionGridView)gridView).getColumnWidth();
-        requestedHorizontalSpacing = ((PinnedSectionGridView)gridView).getHorizontalSpacing();
+        mNumColumns = gridView.getNumColumns();
+        requestedColumnWidth = gridView.getColumnWidth();
+        requestedHorizontalSpacing = gridView.getHorizontalSpacing();
     }
 
     private int getHeaderSize(){
@@ -98,10 +119,10 @@ class SimpleSectionedGridAdapter extends BaseAdapter{
         }
         if(mWidth != mGridView.getWidth()){
             mStrechMode = mGridView.getStretchMode();
-            mWidth = ((PinnedSectionGridView)mGridView).getAvailableWidth() - (mGridView.getPaddingLeft() + mGridView.getPaddingRight());
-            mNumColumns = ((PinnedSectionGridView)mGridView).getNumColumns();
-            requestedColumnWidth = ((PinnedSectionGridView)mGridView).getColumnWidth();
-            requestedHorizontalSpacing = ((PinnedSectionGridView)mGridView).getHorizontalSpacing();
+            mWidth = mGridView.getAvailableWidth() - (mGridView.getPaddingLeft() + mGridView.getPaddingRight());
+            mNumColumns = mGridView.getNumColumns();
+            requestedColumnWidth = mGridView.getColumnWidth();
+            requestedHorizontalSpacing = mGridView.getHorizontalSpacing();
         }
 
         int spaceLeftOver = mWidth - (mNumColumns * requestedColumnWidth) -

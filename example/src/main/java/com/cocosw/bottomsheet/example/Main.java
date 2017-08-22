@@ -6,8 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-
 import com.cocosw.query.CocoQuery;
+//import com.cocosw.query.CocoQuery;
+
 
 /**
  * Project: gradle
@@ -39,5 +40,6 @@ public class Main extends AppCompatActivity implements AdapterView.OnItemClickLi
         }
         startActivity(intent);
     }
+
 
 }

@@ -28,7 +28,7 @@ import java.util.ArrayList;
  */
 public class BottomSheet4 extends BottomSheetDialogFragment implements DialogInterface {
 
-    private static Builder mBuilder;
+    private Builder mBuilder;
     protected void add(Builder bilder){
         mBuilder = bilder;
     }
@@ -62,7 +62,7 @@ public class BottomSheet4 extends BottomSheetDialogFragment implements DialogInt
                 themeId = outValue.resourceId;
             }else{
                 Log.d("Resolve", "Attribute: NOT found" );
-                themeId = mBuilder.theme>0 ? mBuilder.theme : R.style.BottomSheet_Dialog;
+                themeId = R.style.BottomSheet_Dialog;
             }
         }
         return themeId;

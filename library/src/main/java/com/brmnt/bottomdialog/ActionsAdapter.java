@@ -1,7 +1,6 @@
 package com.brmnt.bottomdialog;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.support.annotation.IdRes;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -13,9 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
-
 /**
- * @author Bramengton on 22/08/2017.
+ * @author Bramengton on 22/08/2017
  */
 class ActionsAdapter extends BaseAdapter {
     private final SparseIntArray hidden = new SparseIntArray();
@@ -26,13 +24,6 @@ class ActionsAdapter extends BaseAdapter {
 
     ActionsAdapter(final Dialog dialog, ActionMenu actions, @IdRes int itemLayoutId, boolean collapseListIcons){
         mLayoutInflater = dialog.getLayoutInflater();
-        mResLayout = itemLayoutId;
-        mActionMenu = actions;
-        mCollapseListIcons = collapseListIcons;
-    }
-
-    ActionsAdapter(final Context context, ActionMenu actions, @IdRes int itemLayoutId, boolean collapseListIcons){
-        mLayoutInflater = LayoutInflater.from(context);
         mResLayout = itemLayoutId;
         mActionMenu = actions;
         mCollapseListIcons = collapseListIcons;

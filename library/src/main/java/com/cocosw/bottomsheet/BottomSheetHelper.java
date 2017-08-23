@@ -34,8 +34,8 @@ public class BottomSheetHelper {
      * @param intent   shareIntent
      * @return BottomSheet builder
      */
-    public static BottomSheet4.Builder shareAction(@NonNull final Activity activity, FragmentManager fm, @NonNull final Intent intent) {
-        BottomSheet4.Builder builder = new BottomSheet4.Builder(activity, fm).grid();
+    public static BottomSheet.Builder shareAction(@NonNull final Activity activity, FragmentManager fm, @NonNull final Intent intent) {
+        BottomSheet.Builder builder = new BottomSheet.Builder(activity, fm).grid();
         PackageManager pm = activity.getPackageManager();
 
         final List<ResolveInfo> list = pm.queryIntentActivities(intent, 0);
@@ -44,7 +44,7 @@ public class BottomSheetHelper {
             builder.sheet(i, list.get(i).loadIcon(pm), list.get(i).loadLabel(pm));
         }
 
-        builder.listener(new DialogInterface.OnClickListener() {
+        builder.setOnClickListener(new DialogInterface.OnClickListener() {
             @Override
             public void onClick(@NonNull DialogInterface dialog, int which) {
                 ActivityInfo activityInfo = list.get(which).activityInfo;

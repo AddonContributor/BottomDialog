@@ -1,23 +1,6 @@
-/*
- * Copyright 2011, 2015 Kai Liao
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.cocosw.bottomsheet;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -26,29 +9,29 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.*;
+import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.media.RatingCompat;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
-import android.util.SparseIntArray;
+import android.util.TypedValue;
 import android.view.*;
 import android.widget.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-
 /**
- * One way to present a set of actions to a user is with bottom sheets, a sheet of paper that slides up from the bottom edge of the screen. Bottom sheets offer flexibility in the display of clear and simple actions that do not need explanation.
- * <p/>
- * https://www.google.com/design/spec/components/bottom-sheets.html
- * <p/>
- * Project: BottomSheet
- * Created by Kai Liao on 2014/9/21.
+ * @author Bramengton on 21/08/2017.
  */
-@SuppressWarnings("unused")
-public class BottomSheet extends Dialog implements DialogInterface {
+public class BottomSheet extends BottomSheetDialogFragment {
 
-    private final SparseIntArray hidden = new SparseIntArray();
+    private static Builder mBuilder;
+    protected void add(Builder bilder){
+        mBuilder = bilder;
+    }
 
     private String moreText;
     private Drawable close;
@@ -60,27 +43,39 @@ public class BottomSheet extends Dialog implements DialogInterface {
     private boolean collapseListIcons;
     private PinnedSectionGridView list;
     private SimpleSectionedGridAdapter adapter;
-    private Builder builder;
+
     private ImageView icon;
 
     private int limit = -1;
-    private boolean cancelOnTouchOutside = true;
-    private boolean cancelOnSwipeDown = true;
+
     private ActionMenu fullMenuItem;
     private ActionMenu menuItem;
     private ActionMenu actions;
-    private OnDismissListener dismissListener;
-    private OnShowListener showListener;
 
-    BottomSheet(Context context) {
-        super(context, R.style.BottomSheet_Dialog);
+    private DialogInterface.OnDismissListener dismissListener;
+    private DialogInterface.OnCancelListener cancelListener;
+    private DialogInterface.OnShowListener showListener;
+    private DialogInterface.OnClickListener clickListener;
+
+
+    private static int getThemeResId(Context context, int themeId) {
+        if (themeId == 0) {
+            // If the provided theme is 0, then retrieve the dialogTheme from our theme
+            TypedValue outValue = new TypedValue();
+            if (context.getTheme().resolveAttribute(R.attr.bottomDialogStyle, outValue, true)) {
+                themeId = outValue.resourceId;
+            }else{
+                themeId = R.style.BottomSheet_Dialog;
+            }
+        }
+        return themeId;
     }
 
-    @SuppressWarnings("WeakerAccess")
-    BottomSheet(Context context, int theme) {
-        super(context, theme);
-
-        TypedArray a = getContext()
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        setStyle(DialogFragment.STYLE_NO_TITLE, getThemeResId(getContext(), getTheme()));
+        TypedArray a = this.getContext()
                 .obtainStyledAttributes(null, R.styleable.BottomSheet, R.attr.bottomDialogStyle, 0);
         try {
             more = a.getDrawable(R.styleable.BottomSheet_bd_MoreDrawable);
@@ -93,6 +88,13 @@ public class BottomSheet extends Dialog implements DialogInterface {
         } finally {
             a.recycle();
         }
+        return super.onCreateDialog(savedInstanceState);
+    }
+
+    @Override
+    public void setupDialog(Dialog dialog, int style) {
+        super.setupDialog(dialog, style);
+        init(dialog);
     }
 
     /**
@@ -108,139 +110,118 @@ public class BottomSheet extends Dialog implements DialogInterface {
         }
     }
 
-    @Override
-    public void setCanceledOnTouchOutside(boolean cancel) {
-        super.setCanceledOnTouchOutside(cancel);
-        cancelOnTouchOutside = cancel;
-    }
+    private void init(final Dialog dialog) {
+        final View mDialogView = dialog.getLayoutInflater().inflate(R.layout.bottom_sheet_dialog, null);
+        LinearLayout header = (LinearLayout) dialog.getLayoutInflater().inflate(mHeaderLayoutId, null);
 
-    /**
-     * Sets whether this dialog is canceled when swipe it down
-     *
-     * @param cancel whether this dialog is canceled when swipe it down
-     */
-    public void setCanceledOnSwipeDown(boolean cancel) {
-        cancelOnSwipeDown = cancel;
-    }
-
-    @Override
-    public void setOnShowListener(OnShowListener listener) {
-        this.showListener = listener;
-    }
-
-    private void init(final Context context) {
-        setCanceledOnTouchOutside(cancelOnTouchOutside);
-        final ClosableSlidingLayout mDialogView = (ClosableSlidingLayout) View.inflate(context, R.layout.bottom_sheet_dialog, null);
         LinearLayout mainLayout = (LinearLayout) mDialogView.findViewById(R.id.bs_main);
-        mainLayout.addView(View.inflate(context, mHeaderLayoutId, null), 0);
-        setContentView(mDialogView);
-        if (!cancelOnSwipeDown)
-            mDialogView.swipeable = cancelOnSwipeDown;
-        mDialogView.setSlideListener(new ClosableSlidingLayout.SlideListener() {
-            @Override
-            public void onClosed() {
-                BottomSheet.this.dismiss();
-            }
-
-            @Override
-            public void onOpened() {
-                showFullItems();
-            }
-        });
-
-        super.setOnShowListener(new OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
-                if (showListener != null)
-                    showListener.onShow(dialogInterface);
-                list.setAdapter(adapter);
-                list.startLayoutAnimation();
-                if (builder.icon == null)
-                    icon.setVisibility(View.GONE);
-                else {
-                    icon.setVisibility(View.VISIBLE);
-                    icon.setImageDrawable(builder.icon);
-                }
-            }
-        });
-        int[] location = new int[2];
-        mDialogView.getLocationOnScreen(location);
+        mainLayout.addView(header, 0);
 
         final TextView title = (TextView) mDialogView.findViewById(R.id.bottom_sheet_title);
-        if (builder.title != null) {
+        if (mBuilder.title != null) {
             title.setVisibility(View.VISIBLE);
-            title.setText(builder.title);
+            title.setText(mBuilder.title);
         }
 
         icon = (ImageView) mDialogView.findViewById(R.id.bottom_sheet_title_image);
         list = (PinnedSectionGridView) mDialogView.findViewById(R.id.bottom_sheet_gridview);
-        mDialogView.mTarget = list;
-        if (!builder.grid) {
+        if (!mBuilder.grid) {
             list.setNumColumns(1);
         }
 
-        if (builder.grid) {
+        if (mBuilder.grid) {
             for (int i = 0; i < getMenu().size(); i++) {
                 if (getMenu().getItem(i).getIcon() == null)
                     throw new IllegalArgumentException("You must set icon for each items in grid style");
             }
         }
 
-        if (builder.limit > 0)
-            limit = builder.limit * getNumColumns();
+        if (mBuilder.limit > 0)
+            limit = mBuilder.limit * getNumColumns();
         else
             limit = Integer.MAX_VALUE;
 
-        mDialogView.setCollapsible(false);
 
-        actions = builder.menu;
+        actions = mBuilder.menu;
         menuItem = actions;
         // over the initial numbers
         if (getMenu().size() > limit) {
-            fullMenuItem = builder.menu;
-            menuItem = builder.menu.clone(limit - 1);
-            ActionMenuItem item = new ActionMenuItem(context, 0, R.id.bs_more, 0, limit - 1, moreText);
+            fullMenuItem = mBuilder.menu;
+            menuItem = mBuilder.menu.clone(limit - 1);
+            ActionMenuItem item = new ActionMenuItem(getContext(), 0, R.id.bs_more, 0, limit - 1, moreText);
             item.setIcon(more);
             menuItem.add(item);
             actions = menuItem;
-            mDialogView.setCollapsible(true);
         }
 
-        int layoutId = builder.grid ? mGridItemLayoutId : mListItemLayoutId;
-        final ActionsAdapter baseAdapter = new ActionsAdapter(context, actions, layoutId, collapseListIcons);
-        adapter = new SimpleSectionedGridAdapter(context, baseAdapter, R.layout.bs_list_divider, R.id.headerlayout, R.id.header);
+        final int layout = mBuilder.grid ? mGridItemLayoutId : mListItemLayoutId;
+        final ActionsAdapter baseAdapter = new ActionsAdapter(dialog, actions, layout, collapseListIcons);
+        adapter = new SimpleSectionedGridAdapter(dialog, baseAdapter, R.layout.bs_list_divider, R.id.headerlayout, R.id.header);
         adapter.setGridView(list);
+
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (((MenuItem) adapter.getItem(position)).getItemId() == R.id.bs_more) {
                     showFullItems();
-                    mDialogView.setCollapsible(false);
                     return;
                 }
 
                 if (!((ActionMenuItem) adapter.getItem(position)).invoke()) {
-                    if (builder.menulistener != null)
-                        builder.menulistener.onMenuItemClick((MenuItem) adapter.getItem(position));
-                    else if (builder.listener != null)
-                        builder.listener.onClick(BottomSheet.this, ((MenuItem) adapter.getItem(position)).getItemId());
+                    if (mBuilder.menulistener != null)
+                        mBuilder.menulistener.onMenuItemClick((MenuItem) adapter.getItem(position));
+                    else if (clickListener != null)
+                        clickListener.onClick(dialog, ((MenuItem) adapter.getItem(position)).getItemId());
                 }
-                dismiss();
+                dialog.dismiss();
             }
         });
 
-        if (builder.dismissListener != null) {
-            setOnDismissListener(builder.dismissListener);
-        }
         setListLayout();
+        dialog.setContentView(mDialogView);
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                if (showListener != null)
+                    showListener.onShow(dialogInterface);
+                list.setAdapter(adapter);
+                list.startLayoutAnimation();
+                if (mBuilder.icon == null)
+                    icon.setVisibility(View.GONE);
+                else {
+                    icon.setVisibility(View.VISIBLE);
+                    icon.setImageDrawable(mBuilder.icon);
+                }
+            }
+        });
+
+//        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//            @Override
+//            public void onDismiss(DialogInterface dialog) {
+//
+//                Activity activity = getActivity();
+//                if(activity instanceof DialogInterface.OnCancelListener)
+//                    ((DialogInterface.OnCancelListener)activity).onCancel(dialog);
+//
+//
+//            }
+//        });
+
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                if (cancelListener != null)
+                    cancelListener.onCancel(dialog);
+            }
+        });
     }
 
 
     private void updateSection() {
         actions.removeInvisible();
 
-        if (!builder.grid && actions.size() > 0) {
+        if (!mBuilder.grid && actions.size() > 0) {
             int groupId = actions.getItem(0).getGroupId();
             ArrayList<SimpleSectionedGridAdapter.Section> sections = new ArrayList<>();
             for (int i = 0; i < actions.size(); i++) {
@@ -286,37 +267,25 @@ public class BottomSheet extends Dialog implements DialogInterface {
         adapter.notifyDataSetChanged();
         setListLayout();
 
-        if (builder.icon == null)
+        if (mBuilder.icon == null)
             icon.setVisibility(View.GONE);
         else {
             icon.setVisibility(View.VISIBLE);
-            icon.setImageDrawable(builder.icon);
+            icon.setImageDrawable(mBuilder.icon);
         }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        showShortItems();
-    }
-
-    private boolean hasDivider() {
-        return adapter.mSections.size() > 0;
     }
 
     private void setListLayout() {
         // without divider, the height of gridview is correct
-        if (!hasDivider())
+        if (adapter.mSections.size() <= 0)
             return;
         list.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                if (Build.VERSION.SDK_INT < 16) {
-                    //noinspection deprecation
-                    list.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                } else {
-                    list.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                }
+                //noinspection deprecation
+                if (Build.VERSION.SDK_INT < 16) list.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                else list.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
                 View lastChild = list.getChildAt(list.getChildCount() - 1);
                 if (lastChild != null)
                     list.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, lastChild.getBottom() + lastChild.getPaddingBottom() + list.getPaddingBottom()));
@@ -324,38 +293,8 @@ public class BottomSheet extends Dialog implements DialogInterface {
         });
     }
 
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        init(getContext());
-
-        WindowManager.LayoutParams params = getWindow().getAttributes();
-        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        params.gravity = Gravity.BOTTOM;
-
-        TypedArray a = getContext().obtainStyledAttributes(new int[]{android.R.attr.layout_width});
-        try {
-            params.width = a.getLayoutDimension(0, ViewGroup.LayoutParams.MATCH_PARENT);
-        } finally {
-            a.recycle();
-        }
-        super.setOnDismissListener(new OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                if (dismissListener != null)
-                    dismissListener.onDismiss(dialog);
-                if (limit != Integer.MAX_VALUE)
-                    showShortItems();
-            }
-        });
-        getWindow().setAttributes(params);
-    }
-
-
-
     public Menu getMenu() {
-        return builder.menu;
+        return mBuilder.menu;
     }
 
     /**
@@ -367,11 +306,6 @@ public class BottomSheet extends Dialog implements DialogInterface {
         setListLayout();
     }
 
-    @Override
-    public void setOnDismissListener(OnDismissListener listener) {
-        this.dismissListener = listener;
-    }
-
     /**
      * Constructor using a context for this builder and the {@link com.cocosw.bottomsheet.BottomSheet} it creates.
      */
@@ -379,41 +313,44 @@ public class BottomSheet extends Dialog implements DialogInterface {
 
         private final Context context;
         private final ActionMenu menu;
-        private int theme;
+
         private CharSequence title;
         private boolean grid;
-        private OnClickListener listener;
-        private OnDismissListener dismissListener;
+
         private Drawable icon;
         private int limit = -1;
         private MenuItem.OnMenuItemClickListener menulistener;
 
+        private FragmentManager mFragmentManager;
+        private BottomSheet dialog;
 
-        /**
-         * Constructor using a context for this builder and the {@link com.cocosw.bottomsheet.BottomSheet} it creates.
-         *
-         * @param context A Context for built BottomSheet.
-         */
-        public Builder(@NonNull Activity context) {
-            this(context, R.style.BottomSheet_Dialog);
-            TypedArray ta = context.getTheme().obtainStyledAttributes(new int[]{R.attr.bottomDialogStyle});
-            try {
-                theme = ta.getResourceId(0, R.style.BottomSheet_Dialog);
-            } finally {
-                ta.recycle();
-            }
+        public Builder(@NonNull Context context, FragmentManager fragmentManager){
+            dialog = new BottomSheet();
+            this.mFragmentManager = fragmentManager;
+            this.context = context;
+            this.menu = new ActionMenu(context);
+        }
+
+        public Builder(@NonNull Context context, FragmentManager fragmentManager, @RatingCompat.Style int theme){
+            dialog = new BottomSheet();
+            dialog.setStyle(DialogFragment.STYLE_NO_TITLE, theme);
+            this.mFragmentManager = fragmentManager;
+            this.context = context;
+            this.menu = new ActionMenu(context);
+        }
+
+        public ActionMenu getMenu(){
+            return this.menu;
         }
 
         /**
-         * Constructor using a context for this builder and the {@link com.cocosw.bottomsheet.BottomSheet} it creates with given style
+         * Show BottomSheet in dark color theme looking
          *
-         * @param context A Context for built BottomSheet.
-         * @param theme   The theme id will be apply to BottomSheet
+         * @return This Builder object to allow for chaining of calls to set methods
          */
-        public Builder(Context context, @StyleRes int theme) {
-            this.context = context;
-            this.theme = theme;
-            this.menu = new ActionMenu(context);
+        public Builder darkTheme() {
+            dialog.setStyle(DialogFragment.STYLE_NO_TITLE, R.style.BottomSheet_Dialog_Dark);
+            return this;
         }
 
         /**
@@ -426,7 +363,6 @@ public class BottomSheet extends Dialog implements DialogInterface {
             new MenuInflater(context).inflate(xmlRes, menu);
             return this;
         }
-
 
         /**
          * Add one item into BottomSheet
@@ -527,16 +463,6 @@ public class BottomSheet extends Dialog implements DialogInterface {
             return this;
         }
 
-        /**
-         * Set OnclickListener for BottomSheet
-         *
-         * @param listener OnclickListener for BottomSheet
-         * @return This Builder object to allow for chaining of calls to set methods
-         */
-        public Builder listener(@NonNull OnClickListener listener) {
-            this.listener = listener;
-            return this;
-        }
 
         /**
          * Set OnMenuItemClickListener for BottomSheet
@@ -544,32 +470,9 @@ public class BottomSheet extends Dialog implements DialogInterface {
          * @param listener OnMenuItemClickListener for BottomSheet
          * @return This Builder object to allow for chaining of calls to set methods
          */
-        public Builder listener(@NonNull MenuItem.OnMenuItemClickListener listener) {
+        public Builder setOnClickListener(@NonNull MenuItem.OnMenuItemClickListener listener) {
             this.menulistener = listener;
             return this;
-        }
-
-
-        /**
-         * Show BottomSheet in dark color theme looking
-         *
-         * @return This Builder object to allow for chaining of calls to set methods
-         */
-        public Builder darkTheme() {
-            theme = R.style.BottomSheet_Dialog_Dark;
-            return this;
-        }
-
-
-        /**
-         * Show BottomSheet
-         *
-         * @return Instance of bottomsheet
-         */
-        public BottomSheet show() {
-            BottomSheet dialog = build();
-            dialog.show();
-            return dialog;
         }
 
         /**
@@ -594,7 +497,6 @@ public class BottomSheet extends Dialog implements DialogInterface {
             return this;
         }
 
-
         /**
          * Create a BottomSheet but not show it
          *
@@ -602,8 +504,18 @@ public class BottomSheet extends Dialog implements DialogInterface {
          */
         @SuppressLint("Override")
         public BottomSheet build() {
-            BottomSheet dialog = new BottomSheet(context, theme);
-            dialog.builder = this;
+            dialog.add(this);
+            return dialog;
+        }
+
+        /**
+         * Show BottomSheet
+         *
+         * @return Instance of bottomsheet
+         */
+        public BottomSheet show() {
+            dialog = build();
+            dialog.show(mFragmentManager, null);
             return dialog;
         }
 
@@ -619,16 +531,49 @@ public class BottomSheet extends Dialog implements DialogInterface {
         }
 
         /**
-         * Set the OnDismissListener for BottomSheet
+         * Set click listener for BottomSheet
          *
-         * @param listener OnDismissListener for Bottom
+         * @param listener DialogInterface.OnClickListener for BottomSheet
          * @return This Builder object to allow for chaining of calls to set methods
          */
-        public Builder setOnDismissListener(@NonNull OnDismissListener listener) {
-            this.dismissListener = listener;
+        public Builder setOnClickListener(@NonNull DialogInterface.OnClickListener listener) {
+            dialog.clickListener = listener;
             return this;
         }
+
+        /**
+         * Set show listener for BottomSheet
+         *
+         * @param listener DialogInterface.OnShowListener for BottomSheet
+         * @return This Builder object to allow for chaining of calls to set methods
+         */
+        public Builder setOnShowListener(@NonNull DialogInterface.OnShowListener listener) {
+            dialog.showListener = listener;
+            return this;
+        }
+
+        /**
+         * Set cancel listener for BottomSheet
+         *
+         * @param listener DialogInterface.OnCancelListener for BottomSheet
+         * @return This Builder object to allow for chaining of calls to set methods
+         */
+        public Builder setOnCancelListener(@NonNull DialogInterface.OnCancelListener listener) {
+            dialog.cancelListener = listener;
+            return this;
+        }
+
+
+//        /**
+//         * Set dismiss listener for BottomSheet
+//         *
+//         * @param listener DialogInterface.OnDismissListener for BottomSheet
+//         * @return This Builder object to allow for chaining of calls to set methods
+//         */
+//        public Builder setOnDismissListener(@NonNull DialogInterface.OnDismissListener listener) {
+//            dialog.dismissListener = listener;
+//            return this;
+//        }
     }
-
-
 }
+

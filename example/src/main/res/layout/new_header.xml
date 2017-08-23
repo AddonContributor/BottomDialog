@@ -6,7 +6,7 @@
     android:background="@android:color/darker_gray"
     android:orientation="vertical">
 
-    <View style="@style/BottomSheet.TopDivider" />
+    <View style="@style/BottomDialog.TopDivider" />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -16,15 +16,15 @@
         tools:ignore="UseCompoundDrawables">
 
         <ImageView
-            android:id="@id/bottom_sheet_title_image"
-            style="@style/BottomSheet.Icon"
+            android:id="@id/bottom_dialog_title_image"
+            style="@style/BottomDialog.Icon"
             android:visibility="gone"
             tools:ignore="ContentDescription" />
 
 
         <TextView
-            android:id="@id/bottom_sheet_title"
-            style="@style/BottomSheet.Title"
+            android:id="@id/bottom_dialog_title"
+            style="@style/BottomDialog.Title"
             android:visibility="gone" />
 
     </LinearLayout>

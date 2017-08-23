@@ -14,8 +14,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import com.cocosw.bottomsheet.BottomSheet;
-import com.cocosw.bottomsheet.BottomSheetHelper;
+import com.brmnt.bottomdialog.BottomSheet;
+import com.brmnt.bottomdialog.BottomDialogHelper;
 import com.cocosw.query.CocoQuery;
 
 /**
@@ -83,7 +83,7 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, text);
 
-        return BottomSheetHelper.shareAction(this, getSupportFragmentManager(), shareIntent);
+        return BottomDialogHelper.shareAction(this, getSupportFragmentManager(), shareIntent);
     }
 
 
@@ -156,7 +156,7 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
                 sheet.grid().build();
                 break;
             case 4:
-                sheet = new BottomSheet.Builder(this, getSupportFragmentManager(), R.style.BottomSheet_StyleDialog)
+                sheet = new BottomSheet.Builder(this, getSupportFragmentManager(), R.style.BottomDialog_StyleDialog)
                         .title("To " + adapter.getItem(position))
                         .sheet(R.menu.list)
                         .setOnClickListener(new DialogInterface.OnClickListener() {
@@ -177,7 +177,7 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
                                 ListAcitivty.this.onClick(adapter.getItem(position), which);
                             }
                         });
-                sheet.limit(R.integer.bs_initial_list_row).build();
+                sheet.limit(R.integer.bd_initial_list_row).build();
                 break;
             case 6:
                 sheet = getShareActions("Hello " + adapter.getItem(position));
@@ -222,7 +222,7 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
                 menu.setGroupVisible(android.R.id.empty,false);
                 break;
             case 9:
-                sheet = new BottomSheet.Builder(this, getSupportFragmentManager(), R.style.BottomSheet_CustomizedDialog)
+                sheet = new BottomSheet.Builder(this, getSupportFragmentManager(), R.style.BottomDialog_CustomizedDialog)
                         .grid()
                         .title("To " + adapter.getItem(position))
                         .sheet(R.menu.list)

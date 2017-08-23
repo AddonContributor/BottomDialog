@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.brmnt.bottomdialog.HeaderLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                     android:layout_height="wrap_content"
+                                     android:layout_width="fill_parent"
+                                     android:id="@+id/header_layout">
+    <View style="@style/BottomDialog.ListDivider"
+          android:id="@+id/header"/>
+</com.brmnt.bottomdialog.HeaderLayout>

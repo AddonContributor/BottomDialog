@@ -1,4 +1,4 @@
-package com.cocosw.bottomsheet;
+package com.brmnt.bottomdialog;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+
 
 /**
  * @author Bramengton on 22/08/2017.
@@ -72,8 +74,8 @@ class ActionsAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = mLayoutInflater.inflate(mResLayout, parent, false);
             holder = new ViewHolder();
-            holder.title = (TextView) convertView.findViewById(R.id.bs_list_title);
-            holder.image = (ImageView) convertView.findViewById(R.id.bs_list_image);
+            holder.title = (TextView) convertView.findViewById(R.id.list_title);
+            holder.image = (ImageView) convertView.findViewById(R.id.list_image);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();

@@ -1,4 +1,4 @@
-package com.cocosw.bottomsheet;
+package com.brmnt.bottomdialog;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -18,7 +18,7 @@ import java.util.List;
  * Project: BottomSheet
  * Created by LiaoKai(soarcn) on 2015/7/18.
  */
-public class BottomSheetHelper {
+public class BottomDialogHelper {
 
 
     /**
@@ -57,7 +57,7 @@ public class BottomSheetHelper {
                 activity.startActivity(newIntent);
             }
         });
-        builder.limit(R.integer.bs_initial_grid_row);
+        builder.limit(R.integer.bd_initial_grid_row);
         return builder;
     }
 

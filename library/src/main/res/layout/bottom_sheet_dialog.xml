@@ -9,13 +9,13 @@
               android:orientation="vertical"
               tools:ignore="Overdraw">
 
-    <com.cocosw.bottomsheet.PinnedSectionGridView
+    <com.brmnt.bottomdialog.PinnedSectionGridView
             android:id="@+id/bottom_sheet_gridview"
             style="?attr/bd_ListStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fadingEdge="none"
             android:numColumns="?attr/bd_NumColumns"
-            tools:listitem="@layout/bs_grid_entry" />
+            tools:listitem="@layout/grid_entry" />
 
 </LinearLayout>

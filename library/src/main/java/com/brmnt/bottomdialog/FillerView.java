@@ -1,4 +1,4 @@
-package com.cocosw.bottomsheet;
+package com.brmnt.bottomdialog;
 
 import android.content.Context;
 import android.util.AttributeSet;

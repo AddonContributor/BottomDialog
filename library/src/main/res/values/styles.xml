@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="BottomSheet" />
+    <style name="BottomDialog" />
 
-    <!--<style name="BottomSheet.Dialog" parent="android:style/Theme.Dialog">-->
-    <style name="BottomSheet.Dialog" parent="Theme.Design.BottomSheetDialog" >
+    <!--<style name="BottomDialog.Dialog" parent="android:style/Theme.Dialog">-->
+    <style name="BottomDialog.Dialog" parent="Theme.Design.BottomSheetDialog" >
         <item name="android:windowFrame">@null</item>
         <item name="android:textColor">@null</item>
         <item name="android:windowNoTitle">true</item>
@@ -15,33 +15,33 @@
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:backgroundDimAmount">0.3</item>
         <item name="android:backgroundDimEnabled">true</item>
-        <item name="android:windowAnimationStyle">@style/BottomSheet.Animation</item>
+        <item name="android:windowAnimationStyle">@style/BottomDialog.Animation</item>
         <item name="android:textColorPrimary">#DD000000</item>
         <item name="android:textColorSecondary">#8A000000</item>
         <item name="android:textColorHint">#42000000</item>
         <item name="bd_Background">@android:color/background_light</item>
         <item name="bd_DividerColor">@color/bs_divider_color</item>
-        <item name="bd_NumColumns">@integer/bs_grid_colum</item>
+        <item name="bd_NumColumns">@integer/bd_grid_colum</item>
         <item name="bd_TitleTextAppearance">@style/Text.Headline</item>
         <item name="bd_ListItemTitleTextAppearance">@style/Text.Title</item>
         <item name="bd_GridItemTitleTextAppearance">@style/Text.Hint</item>
-        <item name="bd_MoreText">@string/bs_more</item>
+        <item name="bd_MoreText">@string/bd_more</item>
         <item name="bd_CloseDrawable">@drawable/bs_ic_clear_light</item>
         <item name="bd_MoreDrawable">@drawable/bs_ic_more_light</item>
-        <item name="bd_ListStyle">@style/BottomSheet.List</item>
+        <item name="bd_ListStyle">@style/BottomDialog.List</item>
         <item name="bd_CollapseListIcons">true</item>
-        <item name="bd_ListItemLayout">@layout/bs_list_entry</item>
-        <item name="bd_GridItemLayout">@layout/bs_grid_entry</item>
-        <item name="bd_HeaderLayout">@layout/bs_header</item>
+        <item name="bd_ListItemLayout">@layout/list_entry</item>
+        <item name="bd_GridItemLayout">@layout/grid_entry</item>
+        <item name="bd_HeaderLayout">@layout/dialog_header</item>
     </style>
 
-    <style name="BottomSheet.Dialog.Dark" parent="BottomSheet.Dialog">
+    <style name="BottomDialog.Dialog.Dark" parent="BottomDialog.Dialog">
         <item name="android:textColorPrimary">#DDffffff</item>
         <item name="android:textColorSecondary">#8Affffff</item>
         <item name="android:textColorHint">#42ffffff</item>
         <item name="bd_Background">@android:color/background_dark</item>
         <item name="bd_DividerColor">@color/bs_dark_divider_color</item>
-        <item name="bd_ListStyle">@style/BottomSheet.List.Dark</item>
+        <item name="bd_ListStyle">@style/BottomDialog.List.Dark</item>
         <item name="bd_CloseDrawable">@drawable/bs_ic_clear</item>
         <item name="bd_MoreDrawable">@drawable/bs_ic_more</item>
     </style>
@@ -76,7 +76,7 @@
         <item name="android:fontFamily" tools:ignore="NewApi">sans-serif</item>
     </style>
 
-    <style name="BottomSheet.Title">
+    <style name="BottomDialog.Title">
         <item name="android:textAlignment" tools:ignore="NewApi">viewStart</item>
         <item name="android:singleLine">true</item>
         <item name="android:minHeight">56dp</item>
@@ -88,40 +88,40 @@
         <item name="android:gravity">center_vertical</item>
     </style>
 
-    <style name="BottomSheet.Icon">
+    <style name="BottomDialog.Icon">
         <item name="android:layout_width">40dp</item>
         <item name="android:layout_height">40dp</item>
         <item name="android:layout_marginLeft">16dp</item>
     </style>
 
-    <style name="BottomSheet.List">
+    <style name="BottomDialog.List">
         <item name="android:listSelector">@drawable/bs_list_selector</item>
         <item name="android:drawSelectorOnTop">false</item>
-        <item name="android:layoutAnimation">@anim/bs_list_layout_anim_in</item>
+        <item name="android:layoutAnimation">@anim/bottom_dialog_list_layout_anim_in</item>
         <item name="android:paddingBottom">8dp</item>
         <item name="android:clipToPadding">false</item>
     </style>
 
-    <style name="BottomSheet.List.Dark">
+    <style name="BottomDialog.List.Dark">
         <item name="android:background">@android:color/black</item>
         <item name="android:listSelector">@drawable/bs_list_dark_selector</item>
     </style>
 
-    <style name="BottomSheet.ListItem">
+    <style name="BottomDialog.ListItem">
         <item name="android:layoutDirection" tools:ignore="NewApi">locale</item>
         <item name="android:minHeight">48dp</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:layoutAnimation">@null</item>
     </style>
 
-    <style name="BottomSheet.ListItemImage">
+    <style name="BottomDialog.ListItemImage">
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_height">24dp</item>
         <item name="android:layout_width">24dp</item>
         <item name="android:layout_marginRight">16dp</item>
     </style>
 
-    <style name="BottomSheet.ListItemTitle">
+    <style name="BottomDialog.ListItemTitle">
         <item name="android:textAlignment" tools:targetApi="jelly_bean_mr1">viewStart</item>
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_width">fill_parent</item>
@@ -130,7 +130,7 @@
         <item name="android:textAppearance">?attr/bd_ListItemTitleTextAppearance</item>
     </style>
 
-    <style name="BottomSheet.ListDivider">
+    <style name="BottomDialog.ListDivider">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">fill_parent</item>
         <item name="android:minHeight">1dp</item>
@@ -139,33 +139,33 @@
         <item name="android:layout_marginBottom">8dp</item>
     </style>
 
-    <style name="BottomSheet.GridItemImage">
+    <style name="BottomDialog.GridItemImage">
         <item name="android:layout_height">48dp</item>
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_margin">8dp</item>
         <item name="android:padding">0dp</item>
     </style>
 
-    <style name="BottomSheet.GridItemTitle">
+    <style name="BottomDialog.GridItemTitle">
         <item name="android:singleLine">true</item>
         <item name="android:textAppearance">?attr/bd_GridItemTitleTextAppearance</item>
         <item name="android:padding">0dp</item>
     </style>
 
-    <style name="BottomSheet.Grid"/>
+    <style name="BottomDialog.Grid"/>
 
-    <style name="BottomSheet.GridItem">
+    <style name="BottomDialog.GridItem">
         <item name="android:gravity">center_horizontal</item>
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingBottom">8dp</item>
     </style>
 
-    <style name="BottomSheet.Animation">
+    <style name="BottomDialog.Animation">
         <item name="android:windowEnterAnimation">@anim/dock_bottom_enter</item>
         <item name="android:windowExitAnimation">@anim/dock_bottom_exit</item>
     </style>
 
-    <style name="BottomSheet.TopDivider">
+    <style name="BottomDialog.TopDivider">
         <item name="android:background">?attr/bd_DividerColor</item>
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">1dp</item>

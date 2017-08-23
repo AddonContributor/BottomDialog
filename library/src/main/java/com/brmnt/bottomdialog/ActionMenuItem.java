@@ -1,4 +1,4 @@
-package com.cocosw.bottomsheet;
+package com.brmnt.bottomdialog;
 
 /*
  * Copyright (C) 2010 The Android Open Source Project

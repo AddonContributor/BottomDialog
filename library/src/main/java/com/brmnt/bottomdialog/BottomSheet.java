@@ -1,4 +1,4 @@
-package com.cocosw.bottomsheet;
+package com.brmnt.bottomdialog;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -65,7 +65,7 @@ public class BottomSheet extends BottomSheetDialogFragment {
             if (context.getTheme().resolveAttribute(R.attr.bottomDialogStyle, outValue, true)) {
                 themeId = outValue.resourceId;
             }else{
-                themeId = R.style.BottomSheet_Dialog;
+                themeId = R.style.BottomDialog_Dialog;
             }
         }
         return themeId;
@@ -76,15 +76,15 @@ public class BottomSheet extends BottomSheetDialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         setStyle(DialogFragment.STYLE_NO_TITLE, getThemeResId(getContext(), getTheme()));
         TypedArray a = this.getContext()
-                .obtainStyledAttributes(null, R.styleable.BottomSheet, R.attr.bottomDialogStyle, 0);
+                .obtainStyledAttributes(null, R.styleable.BottomDialog, R.attr.bottomDialogStyle, 0);
         try {
-            more = a.getDrawable(R.styleable.BottomSheet_bd_MoreDrawable);
-            close = a.getDrawable(R.styleable.BottomSheet_bd_CloseDrawable);
-            moreText = a.getString(R.styleable.BottomSheet_bd_MoreText);
-            collapseListIcons = a.getBoolean(R.styleable.BottomSheet_bd_CollapseListIcons, true);
-            mHeaderLayoutId = a.getResourceId(R.styleable.BottomSheet_bd_HeaderLayout, R.layout.bs_header);
-            mListItemLayoutId = a.getResourceId(R.styleable.BottomSheet_bd_ListItemLayout, R.layout.bs_list_entry);
-            mGridItemLayoutId = a.getResourceId(R.styleable.BottomSheet_bd_GridItemLayout, R.layout.bs_grid_entry);
+            more = a.getDrawable(R.styleable.BottomDialog_bd_MoreDrawable);
+            close = a.getDrawable(R.styleable.BottomDialog_bd_CloseDrawable);
+            moreText = a.getString(R.styleable.BottomDialog_bd_MoreText);
+            collapseListIcons = a.getBoolean(R.styleable.BottomDialog_bd_CollapseListIcons, true);
+            mHeaderLayoutId = a.getResourceId(R.styleable.BottomDialog_bd_HeaderLayout, R.layout.dialog_header);
+            mListItemLayoutId = a.getResourceId(R.styleable.BottomDialog_bd_ListItemLayout, R.layout.list_entry);
+            mGridItemLayoutId = a.getResourceId(R.styleable.BottomDialog_bd_GridItemLayout, R.layout.grid_entry);
         } finally {
             a.recycle();
         }
@@ -117,13 +117,13 @@ public class BottomSheet extends BottomSheetDialogFragment {
         LinearLayout mainLayout = (LinearLayout) mDialogView.findViewById(R.id.bs_main);
         mainLayout.addView(header, 0);
 
-        final TextView title = (TextView) mDialogView.findViewById(R.id.bottom_sheet_title);
+        final TextView title = (TextView) mDialogView.findViewById(R.id.bottom_dialog_title);
         if (mBuilder.title != null) {
             title.setVisibility(View.VISIBLE);
             title.setText(mBuilder.title);
         }
 
-        icon = (ImageView) mDialogView.findViewById(R.id.bottom_sheet_title_image);
+        icon = (ImageView) mDialogView.findViewById(R.id.bottom_dialog_title_image);
         list = (PinnedSectionGridView) mDialogView.findViewById(R.id.bottom_sheet_gridview);
         if (!mBuilder.grid) {
             list.setNumColumns(1);
@@ -148,7 +148,7 @@ public class BottomSheet extends BottomSheetDialogFragment {
         if (getMenu().size() > limit) {
             fullMenuItem = mBuilder.menu;
             menuItem = mBuilder.menu.clone(limit - 1);
-            ActionMenuItem item = new ActionMenuItem(getContext(), 0, R.id.bs_more, 0, limit - 1, moreText);
+            ActionMenuItem item = new ActionMenuItem(getContext(), 0, R.id.bottom_dialog_button_more, 0, limit - 1, moreText);
             item.setIcon(more);
             menuItem.add(item);
             actions = menuItem;
@@ -156,14 +156,14 @@ public class BottomSheet extends BottomSheetDialogFragment {
 
         final int layout = mBuilder.grid ? mGridItemLayoutId : mListItemLayoutId;
         final ActionsAdapter baseAdapter = new ActionsAdapter(dialog, actions, layout, collapseListIcons);
-        adapter = new SimpleSectionedGridAdapter(dialog, baseAdapter, R.layout.bs_list_divider, R.id.headerlayout, R.id.header);
+        adapter = new SimpleSectionedGridAdapter(dialog, baseAdapter, R.layout.list_divider, R.id.header_layout, R.id.header);
         adapter.setGridView(list);
 
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (((MenuItem) adapter.getItem(position)).getItemId() == R.id.bs_more) {
+                if (((MenuItem) adapter.getItem(position)).getItemId() == R.id.bottom_dialog_button_more) {
                     showFullItems();
                     return;
                 }
@@ -275,6 +275,7 @@ public class BottomSheet extends BottomSheetDialogFragment {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private void setListLayout() {
         // without divider, the height of gridview is correct
         if (adapter.mSections.size() <= 0)
@@ -300,6 +301,7 @@ public class BottomSheet extends BottomSheetDialogFragment {
     /**
      * If you make any changes to menu and try to apply it immediately to your bottomsheet, you should call this.
      */
+    @SuppressWarnings("unused")
     public void invalidate() {
         updateSection();
         adapter.notifyDataSetChanged();
@@ -307,7 +309,7 @@ public class BottomSheet extends BottomSheetDialogFragment {
     }
 
     /**
-     * Constructor using a context for this builder and the {@link com.cocosw.bottomsheet.BottomSheet} it creates.
+     * Constructor using a context for this builder and the {@link BottomSheet} it creates.
      */
     public static class Builder {
 
@@ -349,7 +351,7 @@ public class BottomSheet extends BottomSheetDialogFragment {
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder darkTheme() {
-            dialog.setStyle(DialogFragment.STYLE_NO_TITLE, R.style.BottomSheet_Dialog_Dark);
+            dialog.setStyle(DialogFragment.STYLE_NO_TITLE, R.style.BottomDialog_Dialog_Dark);
             return this;
         }
 

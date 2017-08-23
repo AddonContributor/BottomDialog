@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.cocosw.bottomsheet;
+package com.brmnt.bottomdialog;
 
 import android.content.ComponentName;
 import android.content.Context;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="BottomSheet">
+    <declare-styleable name="BottomDialog">
         <attr name="bottomDialogStyle" format="reference"/>
         <attr name="bd_Background" format="color|reference" />
         <attr name="bd_ListStyle" format="reference"/>

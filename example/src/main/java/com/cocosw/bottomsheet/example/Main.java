@@ -23,7 +23,17 @@ public class Main extends AppCompatActivity implements AdapterView.OnItemClickLi
         setContentView(R.layout.ui_main);
         CocoQuery q = new CocoQuery(this);
 
-        String[] items = new String[]{"From Xml", "Without Icon", "Dark Theme", "Grid", "Style", "Style from Theme", "ShareAction", "FullScreen", "Menu Manipulate", "HeaderLayout"};
+        String[] items = new String[]{
+                "From Xml",
+                "Without Icon",
+                "Dark Theme",
+                "Grid",
+                "Style",
+                "Style from Theme",
+                "ShareAction",
+                "FullScreen",
+                "Menu Manipulate",
+                "HeaderLayout"};
         q.id(R.id.listView)
                 .adapter(adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, android.R.id.text1, items))
                 .itemClicked(this);

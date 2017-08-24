@@ -34,8 +34,8 @@ public class BottomDialogHelper {
      * @param intent   shareIntent
      * @return BottomSheet builder
      */
-    public static BottomSheet.Builder shareAction(@NonNull final Activity activity, FragmentManager fm, @NonNull final Intent intent) {
-        BottomSheet.Builder builder = new BottomSheet.Builder(activity, fm).grid();
+    public static BottomDialog.Builder shareAction(@NonNull final Activity activity, FragmentManager fm, @NonNull final Intent intent) {
+        BottomDialog.Builder builder = new BottomDialog.Builder(activity, fm).grid();
         PackageManager pm = activity.getPackageManager();
 
         final List<ResolveInfo> list = pm.queryIntentActivities(intent, 0);

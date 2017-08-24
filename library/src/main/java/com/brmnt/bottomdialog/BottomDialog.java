@@ -1,22 +1,17 @@
 package com.brmnt.bottomdialog;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.Bundle;
 import android.support.annotation.*;
-import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.media.RatingCompat;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
-import android.util.TypedValue;
 import android.view.*;
 import android.widget.*;
 
@@ -26,11 +21,35 @@ import java.util.ArrayList;
 /**
  * @author Bramengton on 21/08/2017.
  */
-public class BottomSheet extends BottomSheetDialogFragment {
+public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
+    private Builder mBuilder;
 
-    private static Builder mBuilder;
-    protected void add(Builder bilder){
-        mBuilder = bilder;
+    @Override
+    void setDialogStyledAttributes(Context context) {
+        TypedArray a = context.obtainStyledAttributes(null, R.styleable.BottomDialog, R.attr.bottomDialogStyle, 0);
+        try {
+            more = a.getDrawable(R.styleable.BottomDialog_bd_MoreDrawable);
+            close = a.getDrawable(R.styleable.BottomDialog_bd_CloseDrawable);
+            moreText = a.getString(R.styleable.BottomDialog_bd_MoreText);
+            collapseListIcons = a.getBoolean(R.styleable.BottomDialog_bd_CollapseListIcons, true);
+            mHeaderLayoutId = a.getResourceId(R.styleable.BottomDialog_bd_HeaderLayout, R.layout.dialog_header);
+            mListItemLayoutId = a.getResourceId(R.styleable.BottomDialog_bd_ListItemLayout, R.layout.list_entry);
+            mGridItemLayoutId = a.getResourceId(R.styleable.BottomDialog_bd_GridItemLayout, R.layout.grid_entry);
+        } finally {
+            a.recycle();
+        }
+    }
+
+    @Override
+    int setDialogStyle() {
+        return getBuilder().mTheme;
+    }
+
+    @Override
+    public void setupDialog(Dialog dialog, int style) {
+        super.setupDialog(dialog, style);
+        mBuilder = getBuilder();
+        init(dialog);
     }
 
     private String moreText;
@@ -57,46 +76,6 @@ public class BottomSheet extends BottomSheetDialogFragment {
     private DialogInterface.OnShowListener showListener;
     private DialogInterface.OnClickListener clickListener;
 
-
-    private static int getThemeResId(Context context, int themeId) {
-        if (themeId == 0) {
-            // If the provided theme is 0, then retrieve the dialogTheme from our theme
-            TypedValue outValue = new TypedValue();
-            if (context.getTheme().resolveAttribute(R.attr.bottomDialogStyle, outValue, true)) {
-                themeId = outValue.resourceId;
-            }else{
-                themeId = R.style.BottomDialog_Dialog;
-            }
-        }
-        return themeId;
-    }
-
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        setStyle(DialogFragment.STYLE_NO_TITLE, getThemeResId(getContext(), getTheme()));
-        TypedArray a = this.getContext()
-                .obtainStyledAttributes(null, R.styleable.BottomDialog, R.attr.bottomDialogStyle, 0);
-        try {
-            more = a.getDrawable(R.styleable.BottomDialog_bd_MoreDrawable);
-            close = a.getDrawable(R.styleable.BottomDialog_bd_CloseDrawable);
-            moreText = a.getString(R.styleable.BottomDialog_bd_MoreText);
-            collapseListIcons = a.getBoolean(R.styleable.BottomDialog_bd_CollapseListIcons, true);
-            mHeaderLayoutId = a.getResourceId(R.styleable.BottomDialog_bd_HeaderLayout, R.layout.dialog_header);
-            mListItemLayoutId = a.getResourceId(R.styleable.BottomDialog_bd_ListItemLayout, R.layout.list_entry);
-            mGridItemLayoutId = a.getResourceId(R.styleable.BottomDialog_bd_GridItemLayout, R.layout.grid_entry);
-        } finally {
-            a.recycle();
-        }
-        return super.onCreateDialog(savedInstanceState);
-    }
-
-    @Override
-    public void setupDialog(Dialog dialog, int style) {
-        super.setupDialog(dialog, style);
-        init(dialog);
-    }
-
     /**
      * Hacky way to get gridview's column number
      */
@@ -118,21 +97,21 @@ public class BottomSheet extends BottomSheetDialogFragment {
         mainLayout.addView(header, 0);
 
         final TextView title = (TextView) mDialogView.findViewById(R.id.bottom_dialog_title);
-        if (mBuilder.title != null) {
+        if (mBuilder.mTitle != null) {
             title.setVisibility(View.VISIBLE);
-            title.setText(mBuilder.title);
+            title.setText(mBuilder.mTitle);
         }
 
         icon = (ImageView) mDialogView.findViewById(R.id.bottom_dialog_title_image);
         list = (PinnedSectionGridView) mDialogView.findViewById(R.id.bottom_sheet_gridview);
-        if (!mBuilder.grid) {
+        if (!mBuilder.mGrid) {
             list.setNumColumns(1);
         }
 
-        if (mBuilder.grid) {
+        if (mBuilder.mGrid) {
             for (int i = 0; i < getMenu().size(); i++) {
                 if (getMenu().getItem(i).getIcon() == null)
-                    throw new IllegalArgumentException("You must set icon for each items in grid style");
+                    throw new IllegalArgumentException("You must set mIcon for each items in mGrid style");
             }
         }
 
@@ -142,19 +121,19 @@ public class BottomSheet extends BottomSheetDialogFragment {
             limit = Integer.MAX_VALUE;
 
 
-        actions = mBuilder.menu;
+        actions = mBuilder.mActionMenu;
         menuItem = actions;
         // over the initial numbers
         if (getMenu().size() > limit) {
-            fullMenuItem = mBuilder.menu;
-            menuItem = mBuilder.menu.clone(limit - 1);
+            fullMenuItem = mBuilder.mActionMenu;
+            menuItem = mBuilder.mActionMenu.clone(limit - 1);
             ActionMenuItem item = new ActionMenuItem(getContext(), 0, R.id.bottom_dialog_button_more, 0, limit - 1, moreText);
             item.setIcon(more);
             menuItem.add(item);
             actions = menuItem;
         }
 
-        final int layout = mBuilder.grid ? mGridItemLayoutId : mListItemLayoutId;
+        final int layout = mBuilder.mGrid ? mGridItemLayoutId : mListItemLayoutId;
         final ActionsAdapter baseAdapter = new ActionsAdapter(dialog, actions, layout, collapseListIcons);
         adapter = new SimpleSectionedGridAdapter(dialog, baseAdapter, R.layout.list_divider, R.id.header_layout, R.id.header);
         adapter.setGridView(list);
@@ -169,8 +148,8 @@ public class BottomSheet extends BottomSheetDialogFragment {
                 }
 
                 if (!((ActionMenuItem) adapter.getItem(position)).invoke()) {
-                    if (mBuilder.menulistener != null)
-                        mBuilder.menulistener.onMenuItemClick((MenuItem) adapter.getItem(position));
+                    if (mBuilder.mMenuListener != null)
+                        mBuilder.mMenuListener.onMenuItemClick((MenuItem) adapter.getItem(position));
                     else if (clickListener != null)
                         clickListener.onClick(dialog, ((MenuItem) adapter.getItem(position)).getItemId());
                 }
@@ -187,11 +166,11 @@ public class BottomSheet extends BottomSheetDialogFragment {
                     showListener.onShow(dialogInterface);
                 list.setAdapter(adapter);
                 list.startLayoutAnimation();
-                if (mBuilder.icon == null)
+                if (mBuilder.mIcon == null)
                     icon.setVisibility(View.GONE);
                 else {
                     icon.setVisibility(View.VISIBLE);
-                    icon.setImageDrawable(mBuilder.icon);
+                    icon.setImageDrawable(mBuilder.mIcon);
                 }
             }
         });
@@ -221,7 +200,7 @@ public class BottomSheet extends BottomSheetDialogFragment {
     private void updateSection() {
         actions.removeInvisible();
 
-        if (!mBuilder.grid && actions.size() > 0) {
+        if (!mBuilder.mGrid && actions.size() > 0) {
             int groupId = actions.getItem(0).getGroupId();
             ArrayList<SimpleSectionedGridAdapter.Section> sections = new ArrayList<>();
             for (int i = 0; i < actions.size(); i++) {
@@ -267,11 +246,11 @@ public class BottomSheet extends BottomSheetDialogFragment {
         adapter.notifyDataSetChanged();
         setListLayout();
 
-        if (mBuilder.icon == null)
+        if (mBuilder.mIcon == null)
             icon.setVisibility(View.GONE);
         else {
             icon.setVisibility(View.VISIBLE);
-            icon.setImageDrawable(mBuilder.icon);
+            icon.setImageDrawable(mBuilder.mIcon);
         }
     }
 
@@ -295,11 +274,11 @@ public class BottomSheet extends BottomSheetDialogFragment {
     }
 
     public Menu getMenu() {
-        return mBuilder.menu;
+        return mBuilder.mActionMenu;
     }
 
     /**
-     * If you make any changes to menu and try to apply it immediately to your bottomsheet, you should call this.
+     * If you make any changes to mActionMenu and try to apply it immediately to your bottomsheet, you should call this.
      */
     @SuppressWarnings("unused")
     public void invalidate() {
@@ -309,40 +288,49 @@ public class BottomSheet extends BottomSheetDialogFragment {
     }
 
     /**
-     * Constructor using a context for this builder and the {@link BottomSheet} it creates.
+     * Constructor using a mContext for this builder and the {@link BottomDialog} it creates.
      */
-    public static class Builder {
+    public static class Builder extends BuilderBottomDialog<BottomDialog>{
 
-        private final Context context;
-        private final ActionMenu menu;
+        private final Context mContext;
+        private final ActionMenu mActionMenu;
 
-        private CharSequence title;
-        private boolean grid;
+        private CharSequence mTitle;
+        private boolean mGrid;
 
-        private Drawable icon;
+        private Drawable mIcon;
         private int limit = -1;
-        private MenuItem.OnMenuItemClickListener menulistener;
+        private MenuItem.OnMenuItemClickListener mMenuListener;
 
-        private FragmentManager mFragmentManager;
-        private BottomSheet dialog;
 
-        public Builder(@NonNull Context context, FragmentManager fragmentManager){
-            dialog = new BottomSheet();
-            this.mFragmentManager = fragmentManager;
-            this.context = context;
-            this.menu = new ActionMenu(context);
+        private int mTheme = 0;
+
+        private BottomDialog dialog;
+
+        public Builder(Context context, FragmentManager manager) {
+            super(context, manager);
+            dialog = new BottomDialog();
+            this.mContext = context;
+            this.mActionMenu = new ActionMenu(context);
         }
 
-        public Builder(@NonNull Context context, FragmentManager fragmentManager, @RatingCompat.Style int theme){
-            dialog = new BottomSheet();
+        public Builder(@NonNull Context context, FragmentManager manager, @StyleRes int theme){
+            super(context, manager);
+            dialog = new BottomDialog();
             dialog.setStyle(DialogFragment.STYLE_NO_TITLE, theme);
-            this.mFragmentManager = fragmentManager;
-            this.context = context;
-            this.menu = new ActionMenu(context);
+            this.mContext = context;
+            this.mActionMenu = new ActionMenu(context);
+        }
+
+
+
+        @Override
+        public BottomDialog setDialog() {
+            return new BottomDialog();
         }
 
         public ActionMenu getMenu(){
-            return this.menu;
+            return this.mActionMenu;
         }
 
         /**
@@ -351,18 +339,28 @@ public class BottomSheet extends BottomSheetDialogFragment {
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder darkTheme() {
-            dialog.setStyle(DialogFragment.STYLE_NO_TITLE, R.style.BottomDialog_Dialog_Dark);
+            setTheme(R.style.BottomDialog_Dialog_Dark);
             return this;
         }
 
         /**
-         * Set menu resources as list item to display in BottomSheet
+         * Show BottomSheet in dark color theme looking
          *
-         * @param xmlRes menu resource id
+         * @return This Builder object to allow for chaining of calls to set methods
+         */
+        public Builder setTheme(@StyleRes int style) {
+            mTheme= style;
+            return this;
+        }
+
+        /**
+         * Set mActionMenu resources as list item to display in BottomSheet
+         *
+         * @param xmlRes mActionMenu resource id
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder sheet(@MenuRes int xmlRes) {
-            new MenuInflater(context).inflate(xmlRes, menu);
+            new MenuInflater(mContext).inflate(xmlRes, mActionMenu);
             return this;
         }
 
@@ -370,14 +368,14 @@ public class BottomSheet extends BottomSheetDialogFragment {
          * Add one item into BottomSheet
          *
          * @param id      ID of item
-         * @param iconRes icon resource
+         * @param iconRes mIcon resource
          * @param textRes text resource
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder sheet(int id, @DrawableRes int iconRes, @StringRes int textRes) {
-            ActionMenuItem item = new ActionMenuItem(context, 0, id, 0, 0, context.getText(textRes));
+            ActionMenuItem item = new ActionMenuItem(mContext, 0, id, 0, 0, mContext.getText(textRes));
             item.setIcon(iconRes);
-            menu.add(item);
+            mActionMenu.add(item);
             return this;
         }
 
@@ -385,49 +383,49 @@ public class BottomSheet extends BottomSheetDialogFragment {
          * Add one item into BottomSheet
          *
          * @param id   ID of item
-         * @param icon icon
+         * @param icon mIcon
          * @param text text
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder sheet(int id, @NonNull Drawable icon, @NonNull CharSequence text) {
-            ActionMenuItem item = new ActionMenuItem(context, 0, id, 0, 0, text);
+            ActionMenuItem item = new ActionMenuItem(mContext, 0, id, 0, 0, text);
             item.setIcon(icon);
-            menu.add(item);
+            mActionMenu.add(item);
             return this;
         }
 
         /**
-         * Add one item without icon into BottomSheet
+         * Add one item without mIcon into BottomSheet
          *
          * @param id      ID of item
          * @param textRes text resource
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder sheet(int id, @StringRes int textRes) {
-            menu.add(0, id, 0, textRes);
+            mActionMenu.add(0, id, 0, textRes);
             return this;
         }
 
         /**
-         * Add one item without icon into BottomSheet
+         * Add one item without mIcon into BottomSheet
          *
          * @param id   ID of item
          * @param text text
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder sheet(int id, @NonNull CharSequence text) {
-            menu.add(0, id, 0, text);
+            mActionMenu.add(0, id, 0, text);
             return this;
         }
 
         /**
-         * Set title for BottomSheet
+         * Set mTitle for BottomSheet
          *
-         * @param titleRes title for BottomSheet
+         * @param titleRes mTitle for BottomSheet
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder title(@StringRes int titleRes) {
-            title = context.getText(titleRes);
+            mTitle = mContext.getText(titleRes);
             return this;
         }
 
@@ -439,29 +437,29 @@ public class BottomSheet extends BottomSheetDialogFragment {
          */
         @Deprecated
         public Builder remove(int id) {
-            menu.removeItem(id);
+            mActionMenu.removeItem(id);
             return this;
         }
 
         /**
-         * Set title for BottomSheet
+         * Set mTitle for BottomSheet
          *
-         * @param icon icon for BottomSheet
+         * @param icon mIcon for BottomSheet
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder icon(Drawable icon) {
-            this.icon = icon;
+            this.mIcon = icon;
             return this;
         }
 
         /**
-         * Set title for BottomSheet
+         * Set mTitle for BottomSheet
          *
-         * @param iconRes icon resource id for BottomSheet
+         * @param iconRes mIcon resource id for BottomSheet
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder icon(@DrawableRes int iconRes) {
-            this.icon = context.getResources().getDrawable(iconRes);
+            this.mIcon = mContext.getResources().getDrawable(iconRes);
             return this;
         }
 
@@ -473,17 +471,17 @@ public class BottomSheet extends BottomSheetDialogFragment {
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder setOnClickListener(@NonNull MenuItem.OnMenuItemClickListener listener) {
-            this.menulistener = listener;
+            this.mMenuListener = listener;
             return this;
         }
 
         /**
-         * Show items in grid instead of list
+         * Show items in mGrid instead of list
          *
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder grid() {
-            this.grid = true;
+            this.mGrid = true;
             return this;
         }
 
@@ -495,40 +493,18 @@ public class BottomSheet extends BottomSheetDialogFragment {
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder limit(@IntegerRes int limitRes) {
-            limit = context.getResources().getInteger(limitRes);
+            limit = mContext.getResources().getInteger(limitRes);
             return this;
         }
 
         /**
-         * Create a BottomSheet but not show it
+         * Set mTitle for BottomSheet
          *
-         * @return Instance of bottomsheet
-         */
-        @SuppressLint("Override")
-        public BottomSheet build() {
-            dialog.add(this);
-            return dialog;
-        }
-
-        /**
-         * Show BottomSheet
-         *
-         * @return Instance of bottomsheet
-         */
-        public BottomSheet show() {
-            dialog = build();
-            dialog.show(mFragmentManager, null);
-            return dialog;
-        }
-
-        /**
-         * Set title for BottomSheet
-         *
-         * @param title title for BottomSheet
+         * @param title mTitle for BottomSheet
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder title(CharSequence title) {
-            this.title = title;
+            this.mTitle = title;
             return this;
         }
 

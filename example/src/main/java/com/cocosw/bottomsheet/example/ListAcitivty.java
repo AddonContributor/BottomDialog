@@ -14,7 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import com.brmnt.bottomdialog.BottomSheet;
+import com.brmnt.bottomdialog.BottomDialog;
 import com.brmnt.bottomdialog.BottomDialogHelper;
 import com.cocosw.query.CocoQuery;
 
@@ -27,7 +27,7 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
     private CocoQuery q;
     private int action;
     private ArrayAdapter<String> adapter;
-    private BottomSheet.Builder sheet;
+    private BottomDialog.Builder sheet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +78,7 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
         return roundedBitmapDrawable;
     }
 
-    private BottomSheet.Builder getShareActions(String text) {
+    private BottomDialog.Builder getShareActions(String text) {
         final Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, text);
@@ -105,10 +105,10 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
     }
 
 
-    private BottomSheet.Builder doDialog(final int position){
+    private BottomDialog.Builder doDialog(final int position){
         switch (action) {
             case 0:
-                sheet = new BottomSheet.Builder(this, getSupportFragmentManager())
+                sheet = new BottomDialog.Builder(this, getSupportFragmentManager())
                         .icon(getRoundedBitmap(R.drawable.icon))
                         .title("To " + adapter.getItem(position))
                         .sheet(R.menu.list)
@@ -121,7 +121,7 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
                 sheet.build();
                 break;
             case 1:
-                sheet = new BottomSheet.Builder(this, getSupportFragmentManager())
+                sheet = new BottomDialog.Builder(this, getSupportFragmentManager())
                         .sheet(R.menu.noicon)
                         .setOnClickListener(new DialogInterface.OnClickListener() {
                             @Override
@@ -132,7 +132,7 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
                 sheet.build();
                 break;
             case 2:
-                sheet = new BottomSheet.Builder(this, getSupportFragmentManager())
+                sheet = new BottomDialog.Builder(this, getSupportFragmentManager())
                         .darkTheme()
                         .title("To " + adapter.getItem(position))
                         .sheet(R.menu.list)
@@ -145,7 +145,7 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
                 sheet.build();
                 break;
             case 3:
-                sheet = new BottomSheet.Builder(this, getSupportFragmentManager())
+                sheet = new BottomDialog.Builder(this, getSupportFragmentManager())
                         .sheet(R.menu.list)
                         .setOnClickListener(new DialogInterface.OnClickListener() {
                             @Override
@@ -156,7 +156,8 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
                 sheet.grid().build();
                 break;
             case 4:
-                sheet = new BottomSheet.Builder(this, getSupportFragmentManager(), R.style.BottomDialog_StyleDialog)
+                sheet = new BottomDialog.Builder(this, getSupportFragmentManager())
+                        .setTheme(R.style.BottomDialog_CustomizedDialog)
                         .title("To " + adapter.getItem(position))
                         .sheet(R.menu.list)
                         .setOnClickListener(new DialogInterface.OnClickListener() {
@@ -168,7 +169,7 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
                 sheet.build();
                 break;
             case 5:
-                sheet = new BottomSheet.Builder(this, getSupportFragmentManager())
+                sheet = new BottomDialog.Builder(this, getSupportFragmentManager())
                         .title("To " + adapter.getItem(position))
                         .sheet(R.menu.longlist)
                         .setOnClickListener(new DialogInterface.OnClickListener() {
@@ -189,7 +190,7 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
                 sheet.title("Share To " + adapter.getItem(position)).build();
                 break;
             case 8:
-                sheet = new BottomSheet.Builder(this, getSupportFragmentManager());
+                sheet = new BottomDialog.Builder(this, getSupportFragmentManager());
                 sheet.icon(getRoundedBitmap(R.drawable.icon))
                         .title("To " + adapter.getItem(position))
                         .sheet(R.menu.list)
@@ -222,7 +223,8 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
                 menu.setGroupVisible(android.R.id.empty,false);
                 break;
             case 9:
-                sheet = new BottomSheet.Builder(this, getSupportFragmentManager(), R.style.BottomDialog_CustomizedDialog)
+                sheet = new BottomDialog.Builder(this, getSupportFragmentManager())
+                        .setTheme(R.style.BottomDialog_CustomizedDialog)
                         .grid()
                         .title("To " + adapter.getItem(position))
                         .sheet(R.menu.list)

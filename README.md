@@ -1,4 +1,4 @@
-BottomDialogFragment
+BottomDialog
 =======
 
 This is fork of library <a href=https://github.com/soarcn/BottomSheet>BottomSheet by Kai Liao aka soarcn</a>

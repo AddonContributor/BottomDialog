@@ -61,6 +61,7 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
 
     private boolean collapseListIcons;
     private PinnedSectionGridView list;
+    private ActionsAdapter baseAdapter;
     private SimpleSectionedGridAdapter adapter;
 
     private ImageView icon;
@@ -121,12 +122,12 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
             limit = Integer.MAX_VALUE;
 
 
-        actions = mBuilder.mActionMenu;
-        menuItem = actions;
+
+        menuItem = actions = mBuilder.mActionMenu;
         // over the initial numbers
         if (getMenu().size() > limit) {
             fullMenuItem = mBuilder.mActionMenu;
-            menuItem = mBuilder.mActionMenu.clone(limit - 1);
+            menuItem = mBuilder.mActionMenu.clone(limit-1);
             ActionMenuItem item = new ActionMenuItem(getContext(), 0, R.id.bottom_dialog_button_more, 0, limit - 1, moreText);
             item.setIcon(more);
             menuItem.add(item);
@@ -134,7 +135,8 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
         }
 
         final int layout = mBuilder.mGrid ? mGridItemLayoutId : mListItemLayoutId;
-        final ActionsAdapter baseAdapter = new ActionsAdapter(dialog, actions, layout, collapseListIcons);
+        baseAdapter = new ActionsAdapter(dialog, layout, collapseListIcons);
+        baseAdapter.updateList(actions);
         adapter = new SimpleSectionedGridAdapter(dialog, baseAdapter, R.layout.list_divider, R.id.header_layout, R.id.header);
         adapter.setGridView(list);
 
@@ -227,6 +229,7 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
         }
         actions = fullMenuItem;
         updateSection();
+        baseAdapter.updateList(actions);
         adapter.notifyDataSetChanged();
         list.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         icon.setVisibility(View.VISIBLE);
@@ -243,6 +246,7 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
     private void showShortItems() {
         actions = menuItem;
         updateSection();
+        baseAdapter.updateList(actions);
         adapter.notifyDataSetChanged();
         setListLayout();
 

@@ -178,12 +178,15 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
                                 ListAcitivty.this.onClick(adapter.getItem(position), which);
                             }
                         });
-                sheet.limit(R.integer.bd_initial_list_row).build();
+                sheet
+                        .limit(R.integer.bd_initial_list_row)
+                        .build();
                 break;
             case 6:
                 sheet = getShareActions("Hello " + adapter.getItem(position));
                 sheet.title("Share To " + adapter.getItem(position))
-                        .limit(R.integer.no_limit).build();
+                        .limit(R.integer.no_limit)
+                        .build();
                 break;
             case 7:
                 sheet = getShareActions("Hello " + adapter.getItem(position));

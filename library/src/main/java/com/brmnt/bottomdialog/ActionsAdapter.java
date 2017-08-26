@@ -2,7 +2,6 @@ package com.brmnt.bottomdialog;
 
 import android.app.Dialog;
 import android.support.annotation.IdRes;
-import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,22 +15,26 @@ import android.widget.TextView;
  * @author Bramengton on 22/08/2017
  */
 class ActionsAdapter extends BaseAdapter {
-    private final SparseIntArray hidden = new SparseIntArray();
+    ///private final SparseIntArray hidden = new SparseIntArray();
     private boolean mCollapseListIcons;
     private LayoutInflater mLayoutInflater;
     private ActionMenu mActionMenu;
     private int mResLayout;
 
-    ActionsAdapter(final Dialog dialog, ActionMenu actions, @IdRes int itemLayoutId, boolean collapseListIcons){
+    ActionsAdapter(final Dialog dialog, @IdRes int itemLayoutId, boolean collapseListIcons){
         mLayoutInflater = dialog.getLayoutInflater();
         mResLayout = itemLayoutId;
-        mActionMenu = actions;
         mCollapseListIcons = collapseListIcons;
+    }
+
+    void updateList(ActionMenu actions){
+        mActionMenu = actions;
+        notifyDataSetChanged();
     }
 
     @Override
     public int getCount() {
-        return mActionMenu.size() - hidden.size();
+        return mActionMenu.size() ;//- hidden.size();
     }
 
     @Override
@@ -72,11 +75,10 @@ class ActionsAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        //Нахер надо - не ясно :-)))
-        for (int i = 0; i < hidden.size(); i++) {
-            if (hidden.valueAt(i) <= position)
-                position++;
-        }
+//        //Нахер надо - не ясно :-)))
+//        for (int i = 0; i < hidden.size(); i++) {
+//            if (hidden.valueAt(i) <= position) position++;
+//        }
 
         MenuItem item = getItem(position);
 

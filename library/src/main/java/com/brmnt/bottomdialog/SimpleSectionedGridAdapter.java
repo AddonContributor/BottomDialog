@@ -47,7 +47,7 @@ class SimpleSectionedGridAdapter extends BaseAdapter{
         CharSequence title;
         int type = 0;
 
-        public Section(int firstPosition, CharSequence title) {
+        Section(int firstPosition, CharSequence title) {
             this.firstPosition = firstPosition;
             this.title =title;
         }
@@ -59,7 +59,6 @@ class SimpleSectionedGridAdapter extends BaseAdapter{
 
     SimpleSectionedGridAdapter(Dialog dialog, ActionsAdapter baseAdapter, int sectionResourceId, int headerLayoutResId,
                                int headerTextViewResId) {
-//        mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mLayoutInflater = dialog.getLayoutInflater();
         mSectionResourceId = sectionResourceId;
         mHeaderLayoutResId = headerLayoutResId;

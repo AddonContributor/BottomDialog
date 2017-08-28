@@ -80,29 +80,6 @@ class SimpleSectionedGridAdapter extends BaseAdapter{
         });
     }
 
-    SimpleSectionedGridAdapter(Context context, ActionsAdapter baseAdapter, int sectionResourceId, int headerLayoutResId,
-                               int headerTextViewResId) {
-        mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mSectionResourceId = sectionResourceId;
-        mHeaderLayoutResId = headerLayoutResId;
-        mHeaderTextViewResId = headerTextViewResId;
-        mBaseAdapter = baseAdapter;
-        mContext = context;
-        mBaseAdapter.registerDataSetObserver(new DataSetObserver() {
-            @Override
-            public void onChanged() {
-                mValid = !mBaseAdapter.isEmpty();
-                notifyDataSetChanged();
-            }
-
-            @Override
-            public void onInvalidated() {
-                mValid = false;
-                notifyDataSetInvalidated();
-            }
-        });
-    }
-
     void setGridView(PinnedSectionGridView gridView){
         mGridView = gridView;
         mStrechMode = gridView.getStretchMode();

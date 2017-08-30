@@ -42,7 +42,7 @@ public class Main extends AppCompatActivity implements AdapterView.OnItemClickLi
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent intent = new Intent(this, ListAcitivty.class).setFlags(position).putExtra("title", adapter.getItem(position));
+        Intent intent = new Intent(this, ListActivity.class).setFlags(position).putExtra("title", adapter.getItem(position));
         if (position == 5) {
             intent.putExtra("style", true);
         }

@@ -6,12 +6,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import com.brmnt.bottomdialog.BottomDialog;
@@ -19,10 +19,10 @@ import com.brmnt.bottomdialog.BottomDialogHelper;
 import com.cocosw.query.CocoQuery;
 
 /**
- * Project: gradle
- * Created by LiaoKai(soarcn) on 2014/9/22.
+ * @author by Bramengton
+ * @date 30.08.17.
  */
-public class ListAcitivty extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class FragmentList extends Fragment implements AdapterView.OnItemClickListener {
 
     private CocoQuery q;
     private int action;
@@ -30,33 +30,27 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
     private BottomDialog.Builder sheet;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        if (getIntent().getBooleanExtra("style", false)) {
-            setTheme(R.style.StyleTheme);
-        }
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.ui_main);
-        action = getIntent().getFlags();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        
-        
-        
-        q = new CocoQuery(this);
-        setTitle(getIntent().getStringExtra("title"));
+        action = getActivity().getIntent().getFlags();
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        q = new CocoQuery(getActivity());
+        getActivity().setTitle(getActivity().getIntent().getStringExtra("title"));
         String[] items = new String[]{"Janet Perkins", "Mary Johnson", "Peter Carlsson", "Trevor Hansen", "Aaron Bennett"};
         q.id(R.id.listView)
-                .adapter(adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, android.R.id.text1, items))
+                .adapter(adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, android.R.id.text1, items))
                 .itemClicked(this);
     }
 
-
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home)
-            finish();
-        return super.onOptionsItemSelected(item);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+        return inflater.inflate(R.layout.ui_main, container, false);
     }
+
 
     @SuppressWarnings("deprecation")
     @Override
@@ -83,11 +77,11 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, text);
 
-        return BottomDialogHelper.shareAction(this, getSupportFragmentManager(), shareIntent);
+        return BottomDialogHelper.shareAction(getActivity(), this.getFragmentManager(), shareIntent);
     }
 
 
-    private void onClick(String name, int which) {
+    private void setClick(String name, int which) {
         switch (which) {
             case R.id.share:
                 q.toast("Share to " + name);
@@ -108,74 +102,74 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
     private BottomDialog.Builder doDialog(final int position){
         switch (action) {
             case 0:
-                sheet = new BottomDialog.Builder(this, getSupportFragmentManager())
+                sheet = new BottomDialog.Builder(getContext(), this.getFragmentManager())
                         .icon(getRoundedBitmap(R.drawable.icon))
                         .title("To " + adapter.getItem(position))
                         .sheet(R.menu.list)
                         .setOnClickListener(new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                ListAcitivty.this.onClick(adapter.getItem(position), which);
+                                setClick(adapter.getItem(position), which);
                             }
                         });
                 sheet.build();
                 break;
             case 1:
-                sheet = new BottomDialog.Builder(this, getSupportFragmentManager())
+                sheet = new BottomDialog.Builder(getContext(), this.getFragmentManager())
                         .sheet(R.menu.noicon)
                         .setOnClickListener(new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                ListAcitivty.this.onClick(adapter.getItem(position), which);
+                                setClick(adapter.getItem(position), which);
                             }
                         });
                 sheet.build();
                 break;
             case 2:
-                sheet = new BottomDialog.Builder(this, getSupportFragmentManager())
+                sheet = new BottomDialog.Builder(getContext(), this.getFragmentManager())
                         .darkTheme()
                         .title("To " + adapter.getItem(position))
                         .sheet(R.menu.list)
                         .setOnClickListener(new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                ListAcitivty.this.onClick(adapter.getItem(position), which);
+                                setClick(adapter.getItem(position), which);
                             }
                         });
                 sheet.build();
                 break;
             case 3:
-                sheet = new BottomDialog.Builder(this, getSupportFragmentManager())
+                sheet = new BottomDialog.Builder(getContext(), this.getFragmentManager())
                         .sheet(R.menu.list)
                         .setOnClickListener(new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                ListAcitivty.this.onClick(adapter.getItem(position), which);
+                                setClick(adapter.getItem(position), which);
                             }
                         });
                 sheet.grid().build();
                 break;
             case 4:
-                sheet = new BottomDialog.Builder(this, getSupportFragmentManager())
+                sheet = new BottomDialog.Builder(getContext(), this.getFragmentManager())
                         .setTheme(R.style.BottomDialog_CustomizedDialog)
                         .title("To " + adapter.getItem(position))
                         .sheet(R.menu.list)
                         .setOnClickListener(new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                ListAcitivty.this.onClick(adapter.getItem(position), which);
+                                setClick(adapter.getItem(position), which);
                             }
                         });
                 sheet.build();
                 break;
             case 5:
-                sheet = new BottomDialog.Builder(this, getSupportFragmentManager())
+                sheet = new BottomDialog.Builder(getContext(), this.getFragmentManager())
                         .title("To " + adapter.getItem(position))
                         .sheet(R.menu.longlist)
                         .setOnClickListener(new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                ListAcitivty.this.onClick(adapter.getItem(position), which);
+                                setClick(adapter.getItem(position), which);
                             }
                         });
                 sheet.limit(R.integer.bd_initial_list_row).build();
@@ -190,14 +184,14 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
                 sheet.title("Share To " + adapter.getItem(position)).build();
                 break;
             case 8:
-                sheet = new BottomDialog.Builder(this, getSupportFragmentManager());
+                sheet = new BottomDialog.Builder(getContext(), this.getFragmentManager());
                 sheet.icon(getRoundedBitmap(R.drawable.icon))
                         .title("To " + adapter.getItem(position))
                         .sheet(R.menu.list)
                         .setOnClickListener(new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                ListAcitivty.this.onClick(adapter.getItem(position), which);
+                                setClick(adapter.getItem(position), which);
                             }
                         }).build();
                 final Menu menu = sheet.getMenu();
@@ -223,7 +217,7 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
                 menu.setGroupVisible(android.R.id.empty,false);
                 break;
             case 9:
-                sheet = new BottomDialog.Builder(this, getSupportFragmentManager())
+                sheet = new BottomDialog.Builder(getContext(), this.getFragmentManager())
                         .setTheme(R.style.BottomDialog_CustomizedDialog)
                         .grid()
                         .title("To " + adapter.getItem(position))
@@ -231,7 +225,7 @@ public class ListAcitivty extends AppCompatActivity implements AdapterView.OnIte
                         .setOnClickListener(new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                ListAcitivty.this.onClick(adapter.getItem(position), which);
+                                setClick(adapter.getItem(position), which);
                             }
                         });
                 sheet.build();

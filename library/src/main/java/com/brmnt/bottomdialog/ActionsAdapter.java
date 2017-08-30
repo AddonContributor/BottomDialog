@@ -22,11 +22,15 @@ class ActionsAdapter extends BaseAdapter {
     private ActionMenu mActionMenu;
     private int mResLayout;
 
-    ActionsAdapter(final Dialog dialog, ActionMenu actions, @IdRes int itemLayoutId, boolean collapseListIcons){
+    ActionsAdapter(final Dialog dialog, @IdRes int itemLayoutId, boolean collapseListIcons){
         mLayoutInflater = dialog.getLayoutInflater();
         mResLayout = itemLayoutId;
-        mActionMenu = actions;
         mCollapseListIcons = collapseListIcons;
+    }
+
+    void updateList(ActionMenu actions){
+        mActionMenu = actions;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -74,8 +78,7 @@ class ActionsAdapter extends BaseAdapter {
 
         //Нахер надо - не ясно :-)))
         for (int i = 0; i < hidden.size(); i++) {
-            if (hidden.valueAt(i) <= position)
-                position++;
+            if (hidden.valueAt(i) <= position) position++;
         }
 
         MenuItem item = getItem(position);

@@ -47,7 +47,7 @@ class SimpleSectionedGridAdapter extends BaseAdapter{
         CharSequence title;
         int type = 0;
 
-        public Section(int firstPosition, CharSequence title) {
+        Section(int firstPosition, CharSequence title) {
             this.firstPosition = firstPosition;
             this.title =title;
         }
@@ -59,36 +59,12 @@ class SimpleSectionedGridAdapter extends BaseAdapter{
 
     SimpleSectionedGridAdapter(Dialog dialog, ActionsAdapter baseAdapter, int sectionResourceId, int headerLayoutResId,
                                int headerTextViewResId) {
-//        mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mLayoutInflater = dialog.getLayoutInflater();
         mSectionResourceId = sectionResourceId;
         mHeaderLayoutResId = headerLayoutResId;
         mHeaderTextViewResId = headerTextViewResId;
         mBaseAdapter = baseAdapter;
         mContext = dialog.getContext();
-        mBaseAdapter.registerDataSetObserver(new DataSetObserver() {
-            @Override
-            public void onChanged() {
-                mValid = !mBaseAdapter.isEmpty();
-                notifyDataSetChanged();
-            }
-
-            @Override
-            public void onInvalidated() {
-                mValid = false;
-                notifyDataSetInvalidated();
-            }
-        });
-    }
-
-    SimpleSectionedGridAdapter(Context context, ActionsAdapter baseAdapter, int sectionResourceId, int headerLayoutResId,
-                               int headerTextViewResId) {
-        mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mSectionResourceId = sectionResourceId;
-        mHeaderLayoutResId = headerLayoutResId;
-        mHeaderTextViewResId = headerTextViewResId;
-        mBaseAdapter = baseAdapter;
-        mContext = context;
         mBaseAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
             public void onChanged() {

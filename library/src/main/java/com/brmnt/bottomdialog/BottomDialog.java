@@ -60,16 +60,15 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
     private int mGridItemLayoutId;
 
     private boolean collapseListIcons;
-    private PinnedSectionGridView list;
-    private SimpleSectionedGridAdapter adapter;
+    private PinnedSectionGridView mGridView;
+    private ActionsAdapter mBaseAdapter;
+    private SimpleSectionedGridAdapter mGridAdapter;
 
-    private ImageView icon;
-
-    private int limit = -1;
+    private ImageView mIcon;
 
     private ActionMenu fullMenuItem;
     private ActionMenu menuItem;
-    private ActionMenu actions;
+    private ActionMenu mActionMenu;
 
     private DialogInterface.OnDismissListener dismissListener;
     private DialogInterface.OnCancelListener cancelListener;
@@ -83,7 +82,7 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
         try {
             Field numColumns = GridView.class.getDeclaredField("mRequestedNumColumns");
             numColumns.setAccessible(true);
-            return numColumns.getInt(list);
+            return numColumns.getInt(mGridView);
         } catch (Exception e) {
             return 1;
         }
@@ -91,9 +90,9 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
 
     private void init(final Dialog dialog) {
         final View mDialogView = dialog.getLayoutInflater().inflate(R.layout.bottom_sheet_dialog, null);
-        LinearLayout header = (LinearLayout) dialog.getLayoutInflater().inflate(mHeaderLayoutId, null);
+        final LinearLayout header = (LinearLayout) dialog.getLayoutInflater().inflate(mHeaderLayoutId, null);
+        final LinearLayout mainLayout = (LinearLayout) mDialogView.findViewById(R.id.bs_main);
 
-        LinearLayout mainLayout = (LinearLayout) mDialogView.findViewById(R.id.bs_main);
         mainLayout.addView(header, 0);
 
         final TextView title = (TextView) mDialogView.findViewById(R.id.bottom_dialog_title);
@@ -102,10 +101,10 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
             title.setText(mBuilder.mTitle);
         }
 
-        icon = (ImageView) mDialogView.findViewById(R.id.bottom_dialog_title_image);
-        list = (PinnedSectionGridView) mDialogView.findViewById(R.id.bottom_sheet_gridview);
+        mIcon = (ImageView) mDialogView.findViewById(R.id.bottom_dialog_title_image);
+        mGridView = (PinnedSectionGridView) mDialogView.findViewById(R.id.bottom_sheet_gridview);
         if (!mBuilder.mGrid) {
-            list.setNumColumns(1);
+            mGridView.setNumColumns(1);
         }
 
         if (mBuilder.mGrid) {
@@ -115,62 +114,62 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
             }
         }
 
+        int limit = -1;
         if (mBuilder.limit > 0)
             limit = mBuilder.limit * getNumColumns();
         else
             limit = Integer.MAX_VALUE;
 
-
-        actions = mBuilder.mActionMenu;
-        menuItem = actions;
+        menuItem = mActionMenu = mBuilder.mActionMenu;
         // over the initial numbers
         if (getMenu().size() > limit) {
             fullMenuItem = mBuilder.mActionMenu;
-            menuItem = mBuilder.mActionMenu.clone(limit - 1);
+            menuItem = mBuilder.mActionMenu.clone(limit-1);
             ActionMenuItem item = new ActionMenuItem(getContext(), 0, R.id.bottom_dialog_button_more, 0, limit - 1, moreText);
             item.setIcon(more);
             menuItem.add(item);
-            actions = menuItem;
+            mActionMenu = menuItem;
         }
 
         final int layout = mBuilder.mGrid ? mGridItemLayoutId : mListItemLayoutId;
-        final ActionsAdapter baseAdapter = new ActionsAdapter(dialog, actions, layout, collapseListIcons);
-        adapter = new SimpleSectionedGridAdapter(dialog, baseAdapter, R.layout.list_divider, R.id.header_layout, R.id.header);
-        adapter.setGridView(list);
+        mBaseAdapter = new ActionsAdapter(dialog, layout, collapseListIcons);
+        mBaseAdapter.updateList(mActionMenu);
+        mGridAdapter = new SimpleSectionedGridAdapter(dialog, mBaseAdapter, R.layout.list_divider, R.id.header_layout, R.id.header);
+        mGridAdapter.setGridView(mGridView);
 
 
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (((MenuItem) adapter.getItem(position)).getItemId() == R.id.bottom_dialog_button_more) {
+                if (((MenuItem) mGridAdapter.getItem(position)).getItemId() == R.id.bottom_dialog_button_more) {
                     showFullItems();
                     return;
                 }
 
-                if (!((ActionMenuItem) adapter.getItem(position)).invoke()) {
+                if (!((ActionMenuItem) mGridAdapter.getItem(position)).invoke()) {
                     if (mBuilder.mMenuListener != null)
-                        mBuilder.mMenuListener.onMenuItemClick((MenuItem) adapter.getItem(position));
+                        mBuilder.mMenuListener.onMenuItemClick((MenuItem) mGridAdapter.getItem(position));
                     else if (clickListener != null)
-                        clickListener.onClick(dialog, ((MenuItem) adapter.getItem(position)).getItemId());
+                        clickListener.onClick(dialog, ((MenuItem) mGridAdapter.getItem(position)).getItemId());
                 }
                 dialog.dismiss();
             }
         });
 
-        setListLayout();
+//        setListLayout();
         dialog.setContentView(mDialogView);
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogInterface) {
                 if (showListener != null)
                     showListener.onShow(dialogInterface);
-                list.setAdapter(adapter);
-                list.startLayoutAnimation();
+                mGridView.setAdapter(mGridAdapter);
+                mGridView.startLayoutAnimation();
                 if (mBuilder.mIcon == null)
-                    icon.setVisibility(View.GONE);
+                    mIcon.setVisibility(View.GONE);
                 else {
-                    icon.setVisibility(View.VISIBLE);
-                    icon.setImageDrawable(mBuilder.mIcon);
+                    mIcon.setVisibility(View.VISIBLE);
+                    mIcon.setImageDrawable(mBuilder.mIcon);
                 }
             }
         });
@@ -198,23 +197,23 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
 
 
     private void updateSection() {
-        actions.removeInvisible();
+        mActionMenu.removeInvisible();
 
-        if (!mBuilder.mGrid && actions.size() > 0) {
-            int groupId = actions.getItem(0).getGroupId();
+        if (!mBuilder.mGrid && mActionMenu.size() > 0) {
+            int groupId = mActionMenu.getItem(0).getGroupId();
             ArrayList<SimpleSectionedGridAdapter.Section> sections = new ArrayList<>();
-            for (int i = 0; i < actions.size(); i++) {
-                if (actions.getItem(i).getGroupId() != groupId) {
-                    groupId = actions.getItem(i).getGroupId();
+            for (int i = 0; i < mActionMenu.size(); i++) {
+                if (mActionMenu.getItem(i).getGroupId() != groupId) {
+                    groupId = mActionMenu.getItem(i).getGroupId();
                     sections.add(new SimpleSectionedGridAdapter.Section(i, null));
                 }
             }
             if (sections.size() > 0) {
                 SimpleSectionedGridAdapter.Section[] s = new SimpleSectionedGridAdapter.Section[sections.size()];
                 sections.toArray(s);
-                adapter.setSections(s);
+                mGridAdapter.setSections(s);
             } else {
-                adapter.mSections.clear();
+                mGridAdapter.mSections.clear();
             }
         }
     }
@@ -223,55 +222,63 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Transition changeBounds = new ChangeBounds();
             changeBounds.setDuration(300);
-            TransitionManager.beginDelayedTransition(list, changeBounds);
+            TransitionManager.beginDelayedTransition(mGridView, changeBounds);
         }
-        actions = fullMenuItem;
+        mActionMenu = fullMenuItem;
         updateSection();
-        adapter.notifyDataSetChanged();
-        list.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-        icon.setVisibility(View.VISIBLE);
-        icon.setImageDrawable(close);
-        icon.setOnClickListener(new View.OnClickListener() {
+        mBaseAdapter.updateList(mActionMenu);
+        mGridAdapter.notifyDataSetChanged();
+        mGridView.setLayoutParams(
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT));
+        mIcon.setVisibility(View.VISIBLE);
+        mIcon.setImageDrawable(close);
+        mIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showShortItems();
             }
         });
-        setListLayout();
+//        setListLayout();
     }
 
     private void showShortItems() {
-        actions = menuItem;
+        mActionMenu = menuItem;
         updateSection();
-        adapter.notifyDataSetChanged();
-        setListLayout();
+        mBaseAdapter.updateList(mActionMenu);
+        mGridAdapter.notifyDataSetChanged();
+//        setListLayout();
 
         if (mBuilder.mIcon == null)
-            icon.setVisibility(View.GONE);
+            mIcon.setVisibility(View.GONE);
         else {
-            icon.setVisibility(View.VISIBLE);
-            icon.setImageDrawable(mBuilder.mIcon);
+            mIcon.setVisibility(View.VISIBLE);
+            mIcon.setImageDrawable(mBuilder.mIcon);
         }
     }
 
-    @SuppressWarnings("deprecation")
-    private void setListLayout() {
-        // without divider, the height of gridview is correct
-        if (adapter.mSections.size() <= 0)
-            return;
-        list.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                //noinspection deprecation
-                if (Build.VERSION.SDK_INT < 16) list.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                else list.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
-                View lastChild = list.getChildAt(list.getChildCount() - 1);
-                if (lastChild != null)
-                    list.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, lastChild.getBottom() + lastChild.getPaddingBottom() + list.getPaddingBottom()));
-            }
-        });
-    }
+//    @SuppressWarnings("deprecation")
+//    private void setListLayout() {
+//        // without divider, the height of gridview is correct
+//        if (mGridAdapter.mSections.size() <= 0)
+//            return;
+//        mGridView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                //noinspection deprecation
+//                if (Build.VERSION.SDK_INT < 16) mGridView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+//                else mGridView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//
+//                View lastChild = mGridView.getChildAt(mGridView.getChildCount()-1);
+//                if (lastChild != null)
+//                    mGridView.setLayoutParams(
+//                            new LinearLayout.LayoutParams(
+//                                    LinearLayout.LayoutParams.MATCH_PARENT,
+//                                    lastChild.getBottom() + lastChild.getPaddingBottom() + mGridView.getPaddingBottom()));
+//            }
+//        });
+//    }
 
     public Menu getMenu() {
         return mBuilder.mActionMenu;
@@ -283,8 +290,8 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
     @SuppressWarnings("unused")
     public void invalidate() {
         updateSection();
-        adapter.notifyDataSetChanged();
-        setListLayout();
+        mGridAdapter.notifyDataSetChanged();
+//        setListLayout();
     }
 
     /**

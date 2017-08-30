@@ -1,14 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <!--<item name="bottomDialogStyle">@style/BottomDialog.StyleDialog</item>-->
+
+    <!-- Default Dialog Theme -->
+    <style name="AppTheme.Dialog" parent="Theme.AppCompat.Dialog">
+        <!--<item name="android:listViewStyle">@style/DialogListViewStyle</item>-->
     </style>
 
-    <style name="StyleTheme" parent="@style/AppTheme">
+    <!-- Default Alert Dialog Theme -->
+    <style name="AppTheme.Dialog.Alert" parent="Theme.AppCompat.Dialog.Alert">
+        <!--<item name="android:listViewStyle">@style/DialogListViewStyle</item>-->
+    </style>
+
+
+    <!-- Base Theme -->
+    <style name="BaseTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- Attributes for all APIs -->
+        <item name="android:windowNoTitle">false</item>
+        <item name="android:windowActionBar">false</item>
+
+        <item name="windowActionBarOverlay">true</item>
+        <item name="windowActionModeOverlay">true</item>
+
+        <item name="dialogTheme">@style/AppTheme.Dialog</item>
+        <item name="alertDialogTheme">@style/AppTheme.Dialog.Alert</item>
+    </style>
+
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="BaseTheme">
+           <!--parent="Theme.AppCompat.Light.DarkActionBar">-->
+        <!-- Customize your theme here. -->
         <item name="bottomDialogStyle">@style/BottomDialog.StyleDialog</item>
     </style>
+
+    <!--<style name="StyleTheme" parent="@style/AppTheme">-->
+        <!--<item name="bottomDialogStyle">@style/BottomDialog.StyleDialog</item>-->
+    <!--</style>-->
 
     <style name="BottomDialog.StyleDialog" parent="BottomDialog.Dialog">
         <item name="android:backgroundDimAmount">0.5</item>

@@ -11,9 +11,6 @@ import android.view.MenuItem;
 public class ListActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        if (getIntent().getBooleanExtra("style", false)) {
-//            setTheme(R.style.StyleTheme);
-//        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ui_fragment);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_content, new FragmentList()).commit();

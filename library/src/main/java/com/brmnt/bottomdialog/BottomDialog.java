@@ -12,7 +12,10 @@ import android.support.v4.app.FragmentManager;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.*;
 
 import java.lang.reflect.Field;
@@ -70,10 +73,7 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
     private ActionMenu menuItem;
     private ActionMenu mActionMenu;
 
-    private DialogInterface.OnDismissListener dismissListener;
-    private DialogInterface.OnCancelListener cancelListener;
-    private DialogInterface.OnShowListener showListener;
-    private DialogInterface.OnClickListener clickListener;
+
 
     /**
      * Hacky way to get gridview's column number
@@ -146,11 +146,12 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
                     return;
                 }
 
-                if (!((ActionMenuItem) mGridAdapter.getItem(position)).invoke()) {
+                if (!((ActionMenuItem) mGridAdapter.getItem(position)).invoke())
+                {
                     if (mBuilder.mMenuListener != null)
                         mBuilder.mMenuListener.onMenuItemClick((MenuItem) mGridAdapter.getItem(position));
-                    else if (clickListener != null)
-                        clickListener.onClick(dialog, ((MenuItem) mGridAdapter.getItem(position)).getItemId());
+                    else if (mBuilder.clickListener != null)
+                        mBuilder.clickListener.onClick(dialog, ((MenuItem) mGridAdapter.getItem(position)).getItemId());
                 }
                 dialog.dismiss();
             }
@@ -161,8 +162,8 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogInterface) {
-                if (showListener != null)
-                    showListener.onShow(dialogInterface);
+                if (mBuilder.showListener != null)
+                    mBuilder.showListener.onShow(dialogInterface);
                 mGridView.setAdapter(mGridAdapter);
                 mGridView.startLayoutAnimation();
                 if (mBuilder.mIcon == null)
@@ -177,20 +178,14 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
 //        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
 //            @Override
 //            public void onDismiss(DialogInterface dialog) {
-//
-//                Activity activity = getActivity();
-//                if(activity instanceof DialogInterface.OnCancelListener)
-//                    ((DialogInterface.OnCancelListener)activity).onCancel(dialog);
-//
-//
+//                if (mBuilder.dismissListener != null) mBuilder.dismissListener.onDismiss(dialog);
 //            }
 //        });
 
         dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                if (cancelListener != null)
-                    cancelListener.onCancel(dialog);
+                if (mBuilder.cancelListener != null) mBuilder.cancelListener.onCancel(dialog);
             }
         });
     }
@@ -308,6 +303,11 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
         private Drawable mIcon;
         private int limit = -1;
         private MenuItem.OnMenuItemClickListener mMenuListener;
+
+        private DialogInterface.OnDismissListener dismissListener;
+        private DialogInterface.OnCancelListener cancelListener;
+        private DialogInterface.OnShowListener showListener;
+        private DialogInterface.OnClickListener clickListener;
 
 
         private int mTheme = 0;
@@ -522,7 +522,7 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder setOnClickListener(@NonNull DialogInterface.OnClickListener listener) {
-            dialog.clickListener = listener;
+            this.clickListener = listener;
             return this;
         }
 
@@ -533,7 +533,7 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder setOnShowListener(@NonNull DialogInterface.OnShowListener listener) {
-            dialog.showListener = listener;
+            this.showListener = listener;
             return this;
         }
 
@@ -544,7 +544,7 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder setOnCancelListener(@NonNull DialogInterface.OnCancelListener listener) {
-            dialog.cancelListener = listener;
+            this.cancelListener = listener;
             return this;
         }
 
@@ -556,7 +556,7 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
 //         * @return This Builder object to allow for chaining of calls to set methods
 //         */
 //        public Builder setOnDismissListener(@NonNull DialogInterface.OnDismissListener listener) {
-//            dialog.dismissListener = listener;
+//            this.dismissListener = listener;
 //            return this;
 //        }
     }

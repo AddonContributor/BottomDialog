@@ -102,7 +102,7 @@ public class FragmentList extends Fragment implements AdapterView.OnItemClickLis
     private BottomDialog.Builder doDialog(final int position){
         switch (action) {
             case 0:
-                sheet = new BottomDialog.Builder(getContext(), this.getFragmentManager())
+                sheet = new BottomDialog.Builder(getContext(), getFragmentManager())
                         .icon(getRoundedBitmap(R.drawable.icon))
                         .title("To " + adapter.getItem(position))
                         .sheet(R.menu.list)

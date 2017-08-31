@@ -37,10 +37,11 @@ abstract class FragmentBottomDialog<T extends BuilderBottomDialog> extends Botto
         if (themeId == 0) {
             // If the provided theme is 0, then retrieve the dialogTheme from our theme
             TypedValue outValue = new TypedValue();
-            if (context.getTheme().resolveAttribute(R.attr.bottomDialogStyle, outValue, true)) {
+            if (context.getTheme().resolveAttribute(com.brmnt.bottomdialog.R.attr.bottomDialogStyle, outValue, true)) {
                 themeId = outValue.resourceId;
-            }else{
-                themeId = R.style.BottomDialog_Dialog;
+            }
+            else{
+                themeId = com.brmnt.bottomdialog.R.style.BottomDialog_Dialog;
             }
         }
         return themeId;

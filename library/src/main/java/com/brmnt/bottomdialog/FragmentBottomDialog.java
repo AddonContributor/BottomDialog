@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.StyleRes;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.DialogFragment;
 import android.util.TypedValue;
@@ -12,7 +13,7 @@ import android.util.TypedValue;
  * @author by Bramengton create: 24.08.17.
  */
 abstract class FragmentBottomDialog<T extends BuilderBottomDialog> extends BottomSheetDialogFragment {
-    abstract void setDialogStyledAttributes(Context context);
+    abstract void setDialogStyledAttributes(Context context, @StyleRes int defStyle);
     abstract int setDialogStyle();
 
     private T mBuilder;
@@ -28,8 +29,9 @@ abstract class FragmentBottomDialog<T extends BuilderBottomDialog> extends Botto
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        setStyle(DialogFragment.STYLE_NO_TITLE, getThemeResId(getContext(), setDialogStyle()));
-        setDialogStyledAttributes(this.getContext());
+        int theme=getThemeResId(getContext(), setDialogStyle());
+        setStyle(DialogFragment.STYLE_NO_TITLE, getThemeResId(getContext(), theme));
+        setDialogStyledAttributes(this.getContext(), theme);
         return super.onCreateDialog(savedInstanceState);
     }
 
@@ -37,11 +39,11 @@ abstract class FragmentBottomDialog<T extends BuilderBottomDialog> extends Botto
         if (themeId == 0) {
             // If the provided theme is 0, then retrieve the dialogTheme from our theme
             TypedValue outValue = new TypedValue();
-            if (context.getTheme().resolveAttribute(com.brmnt.bottomdialog.R.attr.bottomDialogStyle, outValue, true)) {
+            if (context.getTheme().resolveAttribute(R.attr.bottomDialogStyle, outValue, true)) {
                 themeId = outValue.resourceId;
             }
             else{
-                themeId = com.brmnt.bottomdialog.R.style.BottomDialog_Dialog;
+                themeId = R.style.BottomDialog_Dialog;
             }
         }
         return themeId;

@@ -23,6 +23,8 @@
 
         <item name="dialogTheme">@style/AppTheme.Dialog</item>
         <item name="alertDialogTheme">@style/AppTheme.Dialog.Alert</item>
+
+        <item name="bottomDialogStyle">@style/BottomDialog.StyleDialog</item>
     </style>
 
 
@@ -30,7 +32,7 @@
     <style name="AppTheme" parent="BaseTheme">
            <!--parent="Theme.AppCompat.Light.DarkActionBar">-->
         <!-- Customize your theme here. -->
-        <!--<item name="bottomDialogStyle">@style/BottomDialog.StyleDialog</item>-->
+
     </style>
 
     <!--<style name="StyleTheme" parent="@style/AppTheme">-->
@@ -46,6 +48,7 @@
         <item name="bd_Background">#ffcc0000</item>
         <item name="bd_DividerColor">@color/abc_search_url_text_pressed</item>
         <item name="bd_NumColumns">4</item>
+        <!--<item name="bd_MoreText">@android:string/unknownName</item>-->
         <item name="bd_ListStyle">@style/BottomDialog.StyleList</item>
     </style>
 

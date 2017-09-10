@@ -28,8 +28,8 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
     private Builder mBuilder;
 
     @Override
-    void setDialogStyledAttributes(Context context) {
-        TypedArray a = context.obtainStyledAttributes(null, R.styleable.BottomDialog, R.attr.bottomDialogStyle, 0);
+    void setDialogStyledAttributes(Context context, int defStyle) {
+        TypedArray a = context.obtainStyledAttributes(null, R.styleable.BottomDialog, R.attr.bottomDialogStyle, defStyle);
         try {
             more = a.getDrawable(R.styleable.BottomDialog_bd_MoreDrawable);
             close = a.getDrawable(R.styleable.BottomDialog_bd_CloseDrawable);
@@ -74,7 +74,7 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
     private ActionMenu mActionMenu;
 
 
-
+    int limit = -1;
     /**
      * Hacky way to get gridview's column number
      */
@@ -114,7 +114,7 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
             }
         }
 
-        int limit = -1;
+
         if (mBuilder.limit > 0)
             limit = mBuilder.limit * getNumColumns();
         else
@@ -125,6 +125,7 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
         if (getMenu().size() > limit) {
             fullMenuItem = mBuilder.mActionMenu;
             menuItem = mBuilder.mActionMenu.clone(limit-1);
+
             ActionMenuItem item = new ActionMenuItem(getContext(), 0, R.id.bottom_dialog_button_more, 0, limit - 1, moreText);
             item.setIcon(more);
             menuItem.add(item);

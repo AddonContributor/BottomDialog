@@ -19,7 +19,7 @@ https://www.google.com/design/spec/components/bottom-sheets.html
 How to use this library
 =======
 
-- Download this library, import to your IDE (eclipse...) as a library project.
+- Download this library, import to your IDE as a library project.
 - Using Gradle
 
 ```groovy
@@ -107,21 +107,13 @@ Style
     </style>
 ```
 
-Contribute
-=======
-
-- Feel free to fork it
-
-About me
-=======
-
-I'm Kai, an 32 years old android developer based in Sydney.
+About me :
+I'm Konstantin, an 34 years old android developer based in Nikolaev city, Ukraine.
 
 -->
-License
-=======
+License: 
 
-    Copyright 2011, 2015 Kai Liao
+    Copyright 2017 Kisarinov Konstantin
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

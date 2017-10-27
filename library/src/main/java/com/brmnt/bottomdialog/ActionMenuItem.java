@@ -292,4 +292,57 @@ import android.view.View;
          // No need to save the setOnClickListener; ActionMenuItem does not support collapsing items.
          return this;
      }
+  
+     //fix for > api25      
+     public SupportMenuItem setContentDescription(CharSequence contentDescription) {
+         return this;
+     }
+
+     public CharSequence getContentDescription() {
+         return null;
+     }
+
+     public SupportMenuItem setTooltipText(CharSequence tooltipText) {
+         return this;
+     }
+
+     public CharSequence getTooltipText() {
+         return null;
+     }
+
+     public MenuItem setShortcut(char numericChar, char alphaChar, int numericModifiers, int alphaModifiers) {
+         return this;
+     }
+
+     public MenuItem setNumericShortcut(char numericChar, int numericModifiers) {
+         return this;
+     }
+
+     public int getNumericModifiers() {
+         return 0;
+     }
+
+     public MenuItem setAlphabeticShortcut(char alphaChar, int alphaModifiers) {
+         return this;
+     }
+
+     public int getAlphabeticModifiers() {
+         return 0;
+     }
+
+     public MenuItem setIconTintList(ColorStateList tint) {
+         return this;
+     }
+
+     public ColorStateList getIconTintList() {
+         return null;
+     }
+
+     public MenuItem setIconTintMode(PorterDuff.Mode tintMode) {
+         return this;
+     }
+
+     public PorterDuff.Mode getIconTintMode() {
+         return null;
+     }
  }

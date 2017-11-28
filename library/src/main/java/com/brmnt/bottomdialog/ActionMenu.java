@@ -43,7 +43,7 @@ class ActionMenu implements SupportMenu {
     private boolean mIsQwerty;
     private ArrayList<ActionMenuItem> mItems;
 
-    public ActionMenu(Context context) {
+    ActionMenu(Context context) {
         mContext = context;
         mItems = new ArrayList<>();
     }

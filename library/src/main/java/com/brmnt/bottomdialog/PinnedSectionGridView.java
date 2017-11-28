@@ -27,15 +27,12 @@ import android.widget.GridView;
 /**
  * ListView capable to pin views at its top while the rest is still scrolled.
  */
-class PinnedSectionGridView extends GridView {
-
-
+public final class PinnedSectionGridView extends GridView {
     // -- class fields
 
     private int mNumColumns;
     private int mHorizontalSpacing;
     private int mColumnWidth;
-
 
     public PinnedSectionGridView(Context context) {
         super(context);

@@ -125,7 +125,6 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
         if (getMenu().size() > limit) {
             fullMenuItem = mBuilder.mActionMenu;
             menuItem = mBuilder.mActionMenu.clone(limit-1);
-
             ActionMenuItem item = new ActionMenuItem(getContext(), 0, R.id.bottom_dialog_button_more, 0, limit - 1, moreText);
             item.setIcon(more);
             menuItem.add(item);
@@ -147,8 +146,7 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
                     return;
                 }
 
-                if (!((ActionMenuItem) mGridAdapter.getItem(position)).invoke())
-                {
+                if (!((ActionMenuItem) mGridAdapter.getItem(position)).invoke()) {
                     if (mBuilder.mMenuListener != null)
                         mBuilder.mMenuListener.onMenuItemClick((MenuItem) mGridAdapter.getItem(position));
                     else if (mBuilder.clickListener != null)
@@ -158,7 +156,6 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
             }
         });
 
-//        setListLayout();
         dialog.setContentView(mDialogView);
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
@@ -236,7 +233,6 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
                 showShortItems();
             }
         });
-//        setListLayout();
     }
 
     private void showShortItems() {
@@ -244,7 +240,6 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
         updateSection();
         mBaseAdapter.updateList(mActionMenu);
         mGridAdapter.notifyDataSetChanged();
-//        setListLayout();
 
         if (mBuilder.mIcon == null)
             mIcon.setVisibility(View.GONE);
@@ -253,28 +248,6 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
             mIcon.setImageDrawable(mBuilder.mIcon);
         }
     }
-
-//    @SuppressWarnings("deprecation")
-//    private void setListLayout() {
-//        // without divider, the height of gridview is correct
-//        if (mGridAdapter.mSections.size() <= 0)
-//            return;
-//        mGridView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//            @Override
-//            public void onGlobalLayout() {
-//                //noinspection deprecation
-//                if (Build.VERSION.SDK_INT < 16) mGridView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-//                else mGridView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-//
-//                View lastChild = mGridView.getChildAt(mGridView.getChildCount()-1);
-//                if (lastChild != null)
-//                    mGridView.setLayoutParams(
-//                            new LinearLayout.LayoutParams(
-//                                    LinearLayout.LayoutParams.MATCH_PARENT,
-//                                    lastChild.getBottom() + lastChild.getPaddingBottom() + mGridView.getPaddingBottom()));
-//            }
-//        });
-//    }
 
     public Menu getMenu() {
         return mBuilder.mActionMenu;
@@ -287,7 +260,6 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
     public void invalidate() {
         updateSection();
         mGridAdapter.notifyDataSetChanged();
-//        setListLayout();
     }
 
     /**
@@ -295,8 +267,8 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
      */
     public static class Builder extends BuilderBottomDialog<BottomDialog>{
 
-        private final Context mContext;
-        private final ActionMenu mActionMenu;
+        private Context mContext;
+        private ActionMenu mActionMenu;
 
         private CharSequence mTitle;
         private boolean mGrid;
@@ -309,7 +281,6 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
         private DialogInterface.OnCancelListener cancelListener;
         private DialogInterface.OnShowListener showListener;
         private DialogInterface.OnClickListener clickListener;
-
 
         private int mTheme = 0;
 

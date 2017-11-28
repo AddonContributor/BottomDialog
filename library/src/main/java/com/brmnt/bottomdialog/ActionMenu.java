@@ -39,6 +39,7 @@ class ActionMenu implements SupportMenu {
             2, /* ALTERNATIVE */
             0, /* SELECTED_ALTERNATIVE */
     };
+
     /**
     * This is the part of an order integer that the user can provide.
     */

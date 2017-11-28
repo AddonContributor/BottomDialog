@@ -28,6 +28,8 @@
         <item name="bd_MoreText">@string/bd_more</item>
         <item name="bd_CloseDrawable">@drawable/bs_ic_clear_light</item>
         <item name="bd_MoreDrawable">@drawable/bs_ic_more_light</item>
+        <!--<item name="bd_CloseDrawable">@drawable/close_circle_outline</item>-->
+        <!--<item name="bd_MoreDrawable">@drawable/dots_horizontal</item>-->
         <item name="bd_ListStyle">@style/BottomDialog.List</item>
         <item name="bd_CollapseListIcons">true</item>
         <item name="bd_ListItemLayout">@layout/list_entry</item>
@@ -44,6 +46,8 @@
         <item name="bd_ListStyle">@style/BottomDialog.List.Dark</item>
         <item name="bd_CloseDrawable">@drawable/bs_ic_clear</item>
         <item name="bd_MoreDrawable">@drawable/bs_ic_more</item>
+        <!--<item name="bd_CloseDrawable">@drawable/close_circle_outline_light</item>-->
+        <!--<item name="bd_MoreDrawable">@drawable/dots_horizontal_light</item>-->
     </style>
 
     <style name="Text"/>

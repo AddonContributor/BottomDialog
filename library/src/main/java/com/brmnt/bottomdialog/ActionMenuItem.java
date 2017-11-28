@@ -33,18 +33,15 @@ import android.view.View;
 class ActionMenuItem implements SupportMenuItem {
     private final int mId;
     private final int mGroup;
-    private final int mCategoryOrder;
     private final int mOrdering;
 
     private CharSequence mTitle;
     private CharSequence mTitleCondensed;
-    private Intent mIntent;
     private char mShortcutNumericChar;
     private char mShortcutAlphabeticChar;
 
+    private Intent mIntent;
     private Drawable mIconDrawable;
-    private int mIconResId = NO_ICON;
-
     private Context mContext;
 
     private SupportMenuItem.OnMenuItemClickListener mClickListener;
@@ -62,7 +59,6 @@ class ActionMenuItem implements SupportMenuItem {
         mContext = context;
         mId = id;
         mGroup = group;
-        mCategoryOrder = categoryOrder;
         mOrdering = ordering;
         mTitle = title;
     }
@@ -158,12 +154,10 @@ class ActionMenuItem implements SupportMenuItem {
 
     public MenuItem setIcon(Drawable icon) {
         mIconDrawable = icon;
-        mIconResId = NO_ICON;
         return this;
     }
 
     public MenuItem setIcon(int iconRes) {
-        mIconResId = iconRes;
         if (iconRes>0) mIconDrawable = ContextCompat.getDrawable(mContext, iconRes);
         return this;
     }

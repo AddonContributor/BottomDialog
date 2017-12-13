@@ -45,7 +45,7 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
 
     @Override
     int setDialogStyle() {
-        return getBuilder().mTheme;
+        return getBuilder().getTheme();
     }
 
     @Override
@@ -96,18 +96,18 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
         mainLayout.addView(header, 0);
 
         final TextView title = (TextView) mDialogView.findViewById(R.id.bottom_dialog_title);
-        if (mBuilder.mTitle != null) {
+        if (mBuilder.getTitle() != null) {
             title.setVisibility(View.VISIBLE);
-            title.setText(mBuilder.mTitle);
+            title.setText(mBuilder.getTitle());
         }
 
         mIcon = (ImageView) mDialogView.findViewById(R.id.bottom_dialog_title_image);
         mGridView = (PinnedSectionGridView) mDialogView.findViewById(R.id.bottom_sheet_gridview);
-        if (!mBuilder.mGrid) {
+        if (!mBuilder.isGrid()) {
             mGridView.setNumColumns(1);
         }
 
-        if (mBuilder.mGrid) {
+        if (mBuilder.isGrid()) {
             for (int i = 0; i < getMenu().size(); i++) {
                 if (getMenu().getItem(i).getIcon() == null)
                     throw new IllegalArgumentException("You must set mIcon for each items in mGrid style");
@@ -115,8 +115,8 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
         }
 
 
-        if (mBuilder.limit > 0)
-            limit = mBuilder.limit * getNumColumns();
+        if (mBuilder.getLimit() > 0)
+            limit = mBuilder.getLimit() * getNumColumns();
         else
             limit = Integer.MAX_VALUE;
 
@@ -131,7 +131,7 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
             mActionMenu = menuItem;
         }
 
-        final int layout = mBuilder.mGrid ? mGridItemLayoutId : mListItemLayoutId;
+        final int layout = mBuilder.isGrid() ? mGridItemLayoutId : mListItemLayoutId;
         mBaseAdapter = new ActionsAdapter(dialog, layout, collapseListIcons);
         mBaseAdapter.updateList(mActionMenu);
         mGridAdapter = new SimpleSectionedGridAdapter(dialog, mBaseAdapter, R.layout.list_divider, R.id.header_layout, R.id.header);
@@ -164,11 +164,11 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
                     mBuilder.showListener.onShow(dialogInterface);
                 mGridView.setAdapter(mGridAdapter);
                 mGridView.startLayoutAnimation();
-                if (mBuilder.mIcon == null)
+                if (mBuilder.getIcon() == null)
                     mIcon.setVisibility(View.GONE);
                 else {
                     mIcon.setVisibility(View.VISIBLE);
-                    mIcon.setImageDrawable(mBuilder.mIcon);
+                    mIcon.setImageDrawable(mBuilder.getIcon());
                 }
             }
         });
@@ -192,7 +192,7 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
     private void updateSection() {
         mActionMenu.removeInvisible();
 
-        if (!mBuilder.mGrid && mActionMenu.size() > 0) {
+        if (!mBuilder.isGrid() && mActionMenu.size() > 0) {
             int groupId = mActionMenu.getItem(0).getGroupId();
             ArrayList<SimpleSectionedGridAdapter.Section> sections = new ArrayList<>();
             for (int i = 0; i < mActionMenu.size(); i++) {
@@ -241,11 +241,11 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
         mBaseAdapter.updateList(mActionMenu);
         mGridAdapter.notifyDataSetChanged();
 
-        if (mBuilder.mIcon == null)
+        if (mBuilder.getIcon() == null)
             mIcon.setVisibility(View.GONE);
         else {
             mIcon.setVisibility(View.VISIBLE);
-            mIcon.setImageDrawable(mBuilder.mIcon);
+            mIcon.setImageDrawable(mBuilder.getIcon());
         }
     }
 
@@ -270,38 +270,28 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
         private Context mContext;
         private ActionMenu mActionMenu;
 
-        private CharSequence mTitle;
-        private boolean mGrid;
-
-        private Drawable mIcon;
-        private int limit = -1;
         private MenuItem.OnMenuItemClickListener mMenuListener;
-
         private DialogInterface.OnDismissListener dismissListener;
         private DialogInterface.OnCancelListener cancelListener;
         private DialogInterface.OnShowListener showListener;
         private DialogInterface.OnClickListener clickListener;
 
-        private int mTheme = 0;
-
         private BottomDialog dialog;
 
         public Builder(Context context, FragmentManager manager) {
-            super(context, manager);
+            super(manager);
             dialog = new BottomDialog();
             this.mContext = context;
             this.mActionMenu = new ActionMenu(context);
         }
 
         public Builder(@NonNull Context context, FragmentManager manager, @StyleRes int theme){
-            super(context, manager);
+            super(manager);
             dialog = new BottomDialog();
             dialog.setStyle(DialogFragment.STYLE_NO_TITLE, theme);
             this.mContext = context;
             this.mActionMenu = new ActionMenu(context);
         }
-
-
 
         @Override
         public BottomDialog setDialog() {
@@ -318,17 +308,17 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder darkTheme() {
-            setTheme(R.style.BottomDialog_Dialog_Dark);
+            Theme(R.style.BottomDialog_Dialog_Dark);
             return this;
         }
 
-        /**
-         * Show BottomSheet in dark color theme looking
-         *
-         * @return This Builder object to allow for chaining of calls to set methods
-         */
         public Builder setTheme(@StyleRes int style) {
-            mTheme= style;
+            Theme(style);
+            return this;
+        }
+
+        public Builder grid(){
+            setGrid();
             return this;
         }
 
@@ -404,7 +394,12 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder title(@StringRes int titleRes) {
-            mTitle = mContext.getText(titleRes);
+            setTitle(titleRes);
+            return this;
+        }
+
+        public Builder title(String titleRes) {
+            setTitle(titleRes);
             return this;
         }
 
@@ -427,7 +422,7 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder icon(Drawable icon) {
-            this.mIcon = icon;
+            setIcon(icon);
             return this;
         }
 
@@ -438,7 +433,7 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder icon(@DrawableRes int iconRes) {
-            this.mIcon = mContext.getResources().getDrawable(iconRes);
+            setIcon(iconRes);
             return this;
         }
 
@@ -455,16 +450,6 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
         }
 
         /**
-         * Show items in mGrid instead of list
-         *
-         * @return This Builder object to allow for chaining of calls to set methods
-         */
-        public Builder grid() {
-            this.mGrid = true;
-            return this;
-        }
-
-        /**
          * Set initial number of actions which will be shown in current sheet.
          * If more actions need to be shown, a "more" action will be displayed in the last position.
          *
@@ -472,18 +457,7 @@ public class BottomDialog extends FragmentBottomDialog<BottomDialog.Builder> {
          * @return This Builder object to allow for chaining of calls to set methods
          */
         public Builder limit(@IntegerRes int limitRes) {
-            limit = mContext.getResources().getInteger(limitRes);
-            return this;
-        }
-
-        /**
-         * Set mTitle for BottomSheet
-         *
-         * @param title mTitle for BottomSheet
-         * @return This Builder object to allow for chaining of calls to set methods
-         */
-        public Builder title(CharSequence title) {
-            this.mTitle = title;
+            setLimit(limitRes);
             return this;
         }
 

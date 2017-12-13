@@ -1,7 +1,6 @@
 package com.brmnt.bottomdialog;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.support.v4.app.FragmentManager;
 
 /**
@@ -13,8 +12,8 @@ abstract class BuilderBottomDialog<T extends FragmentBottomDialog> extends Field
     public abstract T setDialog();
     private FragmentManager mFragmentManager;
 
-    BuilderBottomDialog(Context context, FragmentManager manager) {
-        super(context);
+    BuilderBottomDialog(FragmentManager manager) {
+        super();
         mFragmentManager = manager;
     }
 

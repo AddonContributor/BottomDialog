@@ -26,12 +26,26 @@ abstract class FragmentBottomDialog<T extends BuilderBottomDialog> extends Botto
         return mBuilder;
     }
 
+    private final static String PARCELABLE = "BuilderBottomDialogParcel";
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(PARCELABLE, mBuilder);
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        int theme=getThemeResId(getContext(), setDialogStyle());
-        setStyle(DialogFragment.STYLE_NO_TITLE, getThemeResId(getContext(), theme));
-        setDialogStyledAttributes(this.getContext(), theme);
+        if(savedInstanceState != null && savedInstanceState.containsKey(PARCELABLE)) {
+            mBuilder = savedInstanceState.getParcelable(PARCELABLE);
+        }
+
+        Context context = getActivity().getApplicationContext();
+        mBuilder.setContext(context);
+        int theme=getThemeResId(context, setDialogStyle());
+        setStyle(DialogFragment.STYLE_NO_TITLE, getThemeResId(context, theme));
+        setDialogStyledAttributes(context, theme);
         return super.onCreateDialog(savedInstanceState);
     }
 
@@ -47,12 +61,6 @@ abstract class FragmentBottomDialog<T extends BuilderBottomDialog> extends Botto
             }
         }
         return themeId;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        setRetainInstance(true);
     }
 
     /*dialog kept disappearing on orientation change.  might be a bug in v4 support.

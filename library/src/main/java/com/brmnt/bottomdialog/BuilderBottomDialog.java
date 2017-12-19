@@ -35,7 +35,7 @@ abstract class BuilderBottomDialog<T extends FragmentBottomDialog> extends Field
     @SuppressWarnings({"unchecked", "WeakerAccess"})
     public T show() {
         mDialog = build();
-        mDialog.show(mFragmentManager, null);
+        mDialog.show(mFragmentManager, "BuilderBottomDialogFragment");
         return mDialog;
     }
 

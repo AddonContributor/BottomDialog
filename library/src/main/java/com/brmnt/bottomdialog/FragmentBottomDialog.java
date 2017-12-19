@@ -40,10 +40,9 @@ abstract class FragmentBottomDialog<T extends BuilderBottomDialog> extends Botto
         if(savedInstanceState != null && savedInstanceState.containsKey(PARCELABLE)) {
             mBuilder = savedInstanceState.getParcelable(PARCELABLE);
         }
-
-        Context context = getActivity().getApplicationContext();
+        final Context context = getContext();
         mBuilder.setContext(context);
-        int theme=getThemeResId(context, setDialogStyle());
+        final int theme = getThemeResId(context, setDialogStyle());
         setStyle(DialogFragment.STYLE_NO_TITLE, getThemeResId(context, theme));
         setDialogStyledAttributes(context, theme);
         return super.onCreateDialog(savedInstanceState);
